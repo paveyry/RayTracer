@@ -4,7 +4,11 @@
 class Camera
 {
 public:
+    // CONSTRUCTOR
     Camera(cv::Vec3i eye, cv::Vec3i lookAt, cv::Vec3i up, double fov, int width, int height);
+
+    // This function does not exist in OPENCV for Vectors.(fixme: change function location ...)
+    cv::Vec3i cross(cv::Vec3i a, cv::Vec3i b);
 
 public:
     cv::Vec3i eye_;
@@ -14,6 +18,7 @@ public:
     int width_;
     int height_;
 
+    // Attributes computed using the previous ones.
     cv::Vec3i viewDirection_;
     cv::Vec3i U_;
     cv::Vec3i V_;

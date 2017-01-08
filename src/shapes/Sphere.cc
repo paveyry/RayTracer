@@ -5,9 +5,8 @@
 namespace shapes
 {
 
-Sphere::Sphere(cv::Vec3i center, double radius, cv::Vec3b color, double alpha, ReflectionType reflectionType,
-               const cv::Mat& transformMatrix)
-    : Shape{color, alpha, reflectionType, transformMatrix}
+Sphere::Sphere(cv::Vec3i center, double radius, cv::Vec3b color, double alpha, ReflectionType reflectionType)
+    : Shape{color, alpha, reflectionType}
     , center_{center}
     , radius_{radius}
 {}

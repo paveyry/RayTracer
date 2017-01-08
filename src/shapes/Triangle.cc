@@ -4,8 +4,8 @@ namespace shapes
 {
 
 Triangle::Triangle(cv::Vec3i p1, cv::Vec3i p2, cv::Vec3i p3, cv::Vec3b color, double alpha,
-                   ReflectionType reflectionType, const cv::Mat& transformMatrix)
-    : Shape{color, alpha, reflectionType, transformMatrix}
+                   ReflectionType reflectionType)
+    : Shape{color, alpha, reflectionType}
     , p1_{p1}
     , p2_{p2}
     , p3_{p3}

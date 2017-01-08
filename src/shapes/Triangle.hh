@@ -8,12 +8,11 @@ namespace shapes
 class Triangle : public Shape
 {
 public:
-    Triangle(cv::Vec3i p1, cv::Vec3i p2, cv::Vec3i p3, cv::Vec3b color, double alpha, ReflectionType reflectionType,
-             const cv::Mat& transformMatrix);
+    Triangle(cv::Vec3i p1, cv::Vec3i p2, cv::Vec3i p3, cv::Vec3b color, double alpha, ReflectionType reflectionType);
 
-    virtual double intersect(const cv::Vec3i& raySource, const cv::Vec3i rayDir) const;
+    virtual double intersect(const cv::Vec3i& raySource, const cv::Vec3i rayDir) const override;
 
-    virtual cv::Vec3i getNormalVect(const cv::Vec3i pt) const;
+    virtual cv::Vec3i getNormalVect(const cv::Vec3i) const override;
 
 public:
     cv::Vec3i p1_;

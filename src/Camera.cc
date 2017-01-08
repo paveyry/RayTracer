@@ -1,4 +1,3 @@
-#include <iostream>
 #include "Camera.hh"
 
 Camera::Camera(cv::Vec3i eye, cv::Vec3i lookAt, cv::Vec3i up, double fov, int width, int height)

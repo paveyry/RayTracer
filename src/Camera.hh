@@ -5,13 +5,13 @@ class Camera
 {
 public:
     // CONSTRUCTOR
-    Camera(cv::Vec3i eye, cv::Vec3i lookAt, cv::Vec3i up, double fov, int width, int height);
+    Camera(cv::Vec3i pos, cv::Vec3i lookAt, cv::Vec3i up, double fov, int width, int height);
 
     // This function does not exist in OPENCV for Vectors.(fixme: change function location ...)
     cv::Vec3i cross(cv::Vec3i a, cv::Vec3i b);
 
 public:
-    cv::Vec3i eye_;
+    cv::Vec3i pos_;
     cv::Vec3i lookAt_;
     cv::Vec3i up_;
     double fov_;

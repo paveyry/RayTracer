@@ -13,6 +13,9 @@ class Scene
 {
 public:
     Scene(std::string file_name);
+
+    void compute_image();
+    void send_ray();
     void load_scene(std::string file_name);
 
 public:

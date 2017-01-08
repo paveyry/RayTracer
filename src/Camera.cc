@@ -1,14 +1,14 @@
 #include "Camera.hh"
 
-Camera::Camera(cv::Vec3i eye, cv::Vec3i lookAt, cv::Vec3i up, double fov, int width, int height)
-    : eye_(eye)
+Camera::Camera(cv::Vec3i pos, cv::Vec3i lookAt, cv::Vec3i up, double fov, int width, int height)
+    : pos_(pos)
     , lookAt_(lookAt)
     , up_(up)
     , fov_(fov)
     , width_(width)
     , height_(height)
 {
-    viewDirection_ = lookAt_ - eye_;
+    viewDirection_ = lookAt_ - pos_;
     U_ = cv::normalize(cross(viewDirection_, up_));
     V_ = cv::normalize(cross(up_, viewDirection_));
     aspectRatio_ = (double)width / (double)height;

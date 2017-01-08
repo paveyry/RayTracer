@@ -9,16 +9,8 @@ Camera::Camera(cv::Vec3i pos, cv::Vec3i lookAt, cv::Vec3i up, double fov, int wi
     , height_(height)
 {
     viewDirection_ = lookAt_ - pos_;
-    U_ = cv::normalize(cross(viewDirection_, up_));
-    V_ = cv::normalize(cross(up_, viewDirection_));
+    U_ = cv::normalize(viewDirection_.cross(up_));
+    V_ = cv::normalize(up_.cross(viewDirection_));
     aspectRatio_ = (double)width / (double)height;
     angle_ = tan((M_PI/2)*fov_/180);
-}
-
-cv::Vec3i Camera::cross(cv::Vec3i a, cv::Vec3i b)
-{
-    int x = a.val[1] * b.val[2] - a.val[2] * b.val[1];
-    int y = a.val[2] * b.val[0] - a.val[0] * b.val[2];
-    int z = a.val[0] * b.val[1] - a.val[1] * b.val[0];
-    return cv::Vec3i{x, y, z};
 }

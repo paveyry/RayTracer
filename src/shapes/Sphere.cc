@@ -34,7 +34,6 @@ double Sphere::intersect(const cv::Vec3i& raySource, const cv::Vec3i rayDir) con
 
     // Return the closest intersection if there was a valid intersection
     return (closestIntersection != std::numeric_limits<double>::max()) ? closestIntersection : -1;
-
 }
 
 cv::Vec3i Sphere::getNormalVect(const cv::Vec3i pt) const

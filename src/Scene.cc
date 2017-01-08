@@ -49,9 +49,9 @@ void Scene::load_scene(std::string file_name)
             iss >> word >> t.val[0] >> t.val[1] >> t.val[2];
             if (word.compare("SPECULAR") == 0)
                 ref = shapes::ReflectionType::SPECULAR;
-            else if (word.compare("DIFFUSED") == 0)
+            else
                 ref = shapes::ReflectionType::DIFFUSED;
-            spheres_.push_back(new shapes::Sphere(c, r, col, alpha, ref, cv::Mat(t)));
+            spheres_.push_back(new shapes::Sphere(c, r, col, alpha, ref));
         }
         else if (word.compare("Triangle") == 0)
         {
@@ -67,9 +67,9 @@ void Scene::load_scene(std::string file_name)
             iss >> alpha >> word >> t.val[0] >> t.val[1] >> t.val[2];
             if (word.compare("SPECULAR") == 0)
                 ref = shapes::ReflectionType::SPECULAR;
-            else if (word.compare("DIFFUSED") == 0)
+            else
                 ref = shapes::ReflectionType::DIFFUSED;
-            triangles_.push_back(new shapes::Triangle(p1, p2, p3, col, alpha, ref, cv::Mat(t)));
+            triangles_.push_back(new shapes::Triangle(p1, p2, p3, col, alpha, ref));
         }
     }
     file.close();

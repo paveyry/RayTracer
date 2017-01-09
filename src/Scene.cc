@@ -5,6 +5,53 @@ Scene::Scene(std::string file_name)
     load_scene(file_name);
 }
 
+void Scene::compute_image()
+{
+    cv::Mat3i image = cv::Mat3i(camera_->width_, camera_->height_, cv::Vec3i{0,0,0});
+    for (int y = 0; y < camera_->height_; ++y)
+        for (int x = 0; x < camera_->width_; ++x)
+        {
+            float pX = (2 * ((x + 0.5) / camera_->width_) - 1) * camera_->angle_ * camera_->aspectRatio_;
+            float pY = (1 - 2 * (y + 0.5) / camera_->height_) * camera_->angle_;
+
+            cv::Vec3i rayDirection = cv::Vec3i{pX, pY, -1}; // - rayOrigin in the formula but here its {0, 0, 0} ...
+
+            rayDirection = applyTransform(rayDirection, camera_->transformView_);
+            rayDirection = cv::normalize(rayDirection);
+
+            image.at<cv::Vec3i>(x, y) = send_ray(cv::Vec3i{0, 0, 0}, rayDirection, 0);
+        }
+    //show_image(image);
+    //save_image("yolo", image);
+}
+
+cv::Vec3i Scene::send_ray(cv::Vec3i rayOrigin, cv::Vec3i rayDirection, int recursion)
+{
+    std::cout << "FIXME" << std::endl;
+    return cv::Vec3i{0, 0, 0};
+}
+
+cv::Vec3i Scene::applyTransform(cv::Vec3i input, cv::Mat t)
+{
+    cv::Vec3i result;
+    result.val[0] = input.dot(cv::Vec3i{t.at<int>(0, 0), t.at<int>(0, 1), t.at<int>(0, 2)});
+    result.val[1] = input.dot(cv::Vec3i{t.at<int>(1, 0), t.at<int>(1, 1), t.at<int>(1, 2)});
+    result.val[2] = input.dot(cv::Vec3i{t.at<int>(2, 0), t.at<int>(2, 1), t.at<int>(2, 2)});
+    return result;
+}
+
+void Scene::show_image(cv::Mat image)
+{
+    cv::namedWindow("generated", cv::WINDOW_NORMAL);
+    cv::imshow("generated", image);
+    cv::waitKey(0);
+}
+
+void Scene::save_image(std::string filename, cv::Mat image)
+{
+    cv::imwrite(filename, image);
+}
+
 void Scene::load_scene(std::string file_name)
 {
     std::ifstream file;

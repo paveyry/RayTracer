@@ -91,9 +91,8 @@ void Scene::load_scene(std::string file_name)
             cv::Vec3i col;
             double alpha;
             shapes::ReflectionType ref;
-            cv::Vec3i t; // Transpose Matrix
             iss >> c.val[0] >> c.val[1] >> c.val[2] >> r >> col.val[0] >> col.val[1] >> col.val[2] >> alpha;
-            iss >> word >> t.val[0] >> t.val[1] >> t.val[2];
+            iss >> word;
             if (word.compare("SPECULAR") == 0)
                 ref = shapes::ReflectionType::SPECULAR;
             else
@@ -108,10 +107,9 @@ void Scene::load_scene(std::string file_name)
             cv::Vec3i col;
             double alpha;
             shapes::ReflectionType ref;
-            cv::Vec3i t;
             iss >> p1.val[0] >> p1.val[1] >> p1.val[2] >> p2.val[0] >> p2.val[1] >> p2.val[2];
             iss >> p3.val[0] >> p3.val[1] >> p3.val[2] >> col.val[0] >> col.val[1] >> col.val[2];
-            iss >> alpha >> word >> t.val[0] >> t.val[1] >> t.val[2];
+            iss >> alpha >> word;
             if (word.compare("SPECULAR") == 0)
                 ref = shapes::ReflectionType::SPECULAR;
             else

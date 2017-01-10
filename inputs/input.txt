@@ -1,5 +1,5 @@
 Camera 0 1 2 3 4 5 6 7 8 50 1280 960
 Light 0 0 0 20 52 158
-Sphere 0 0 0 1 2 2 2 3 DIFFUSED 4 4 4
-Triangle 0 0 0 1 1 1 2 2 2 3 3 3 1 SPECULAR 4 4 4
-Triangle 0 1 2 1 2 8 7 4 6 6 2 7 1 DIFFUSED 5 8 7
+Sphere 0 0 0 1 2 2 2 3 DIFFUSED
+Triangle 0 0 0 1 1 1 2 2 2 3 3 3 1 SPECULAR
+Triangle 0 1 2 1 2 8 7 4 6 6 2 7 1 DIFFUSED

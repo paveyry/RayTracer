@@ -14,7 +14,8 @@ void Scene::compute_image()
             float pX = (2 * ((x + 0.5) / camera_->width_) - 1) * camera_->angle_ * camera_->aspectRatio_;
             float pY = (1 - 2 * (y + 0.5) / camera_->height_) * camera_->angle_;
 
-            cv::Vec3i rayDirection = cv::Vec3i{pX, pY, -1}; // - rayOrigin in the formula but here its {0, 0, 0} ...
+            // - rayOrigin in the formula but here its {0, 0, 0} ...
+            cv::Vec3i rayDirection = cv::Vec3i{static_cast<int>(pX), static_cast<int>(pY), -1};
 
             rayDirection = applyTransform(rayDirection, camera_->transformView_);
             rayDirection = cv::normalize(rayDirection);

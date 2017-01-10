@@ -20,6 +20,9 @@ public:
     void compute_image();
     cv::Vec3i send_ray(cv::Vec3i rayOrigin, cv::Vec3i rayDirection, int recursion);
 
+    template <class T>
+    std::pair<T, double> find_intersection(T shape, cv::Vec3i rayOrigin, cv::Vec3i rayDirection);
+
     cv::Vec3i applyTransform(cv::Vec3i input, cv::Mat t);
 
     void show_image(cv::Mat image);
@@ -33,3 +36,9 @@ public:
     std::vector<shapes::Sphere> spheres_;
     std::vector<shapes::Triangle> triangles_;
 };
+
+template <class T>
+std::pair<T, double> Scene::find_intersection(T shape, cv::Vec3i rayOrigin, cv::Vec3i rayDirection)
+{
+    std::cout << "lol" << std::endl;
+}

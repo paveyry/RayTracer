@@ -8,14 +8,18 @@ namespace shapes
 class Sphere : public Shape
 {
 public:
-    Sphere(cv::Vec3i center, double radius, cv::Vec3b color, double alpha, ReflectionType reflectionType);
+    Sphere(cv::Vec3d center, double radius, cv::Vec3b color, double alpha, ReflectionType reflectionType);
 
-    virtual double intersect(const cv::Vec3i& raySource, const cv::Vec3i rayDir) const override;
+    virtual double intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const override;
 
-    virtual cv::Vec3i getNormalVect(const cv::Vec3i pt) const override;
+    virtual cv::Vec3d getNormalVect(const cv::Vec3d pt) const override;
+
+    virtual void translate(const cv::Vec3d& vec) override;
+
+    virtual void scale(double factor) override;
 
 public:
-    cv::Vec3i center_;
+    cv::Vec3d center_;
     double radius_;
 };
 

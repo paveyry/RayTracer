@@ -5,16 +5,16 @@
 namespace shapes
 {
 
-Sphere::Sphere(cv::Vec3i center, double radius, cv::Vec3b color, double alpha, ReflectionType reflectionType)
+Sphere::Sphere(cv::Vec3d center, double radius, cv::Vec3b color, double alpha, ReflectionType reflectionType)
     : Shape{color, alpha, reflectionType}
     , center_{center}
     , radius_{radius}
 {}
 
-double Sphere::intersect(const cv::Vec3i& raySource, const cv::Vec3i rayDir) const
+double Sphere::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const
 {
     std::vector<double> intersections;
-    cv::Vec3i dist = raySource - center_;
+    cv::Vec3d dist = raySource - center_;
 
     // Solve second degree equation
     double a = rayDir.dot(rayDir);
@@ -36,9 +36,21 @@ double Sphere::intersect(const cv::Vec3i& raySource, const cv::Vec3i rayDir) con
     return (closestIntersection != std::numeric_limits<double>::max()) ? closestIntersection : -1;
 }
 
-cv::Vec3i Sphere::getNormalVect(const cv::Vec3i pt) const
+cv::Vec3d Sphere::getNormalVect(const cv::Vec3d pt) const
 {
     return cv::normalize(pt - center_);
 }
+
+
+virtual void Sphere::translate(const cv::Vec3d& vec)
+{
+    center_ += vec;
+}
+
+void Sphere::scale(double factor)
+{
+    radius_ *= factor;
+}
+
 
 }

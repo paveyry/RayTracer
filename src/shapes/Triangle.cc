@@ -3,7 +3,7 @@
 namespace shapes
 {
 
-Triangle::Triangle(cv::Vec3i p1, cv::Vec3i p2, cv::Vec3i p3, cv::Vec3b color, double alpha,
+Triangle::Triangle(cv::Vec3d p1, cv::Vec3d p2, cv::Vec3d p3, cv::Vec3b color, double alpha,
                    ReflectionType reflectionType)
     : Shape{color, alpha, reflectionType}
     , p1_{p1}
@@ -11,7 +11,7 @@ Triangle::Triangle(cv::Vec3i p1, cv::Vec3i p2, cv::Vec3i p3, cv::Vec3b color, do
     , p3_{p3}
 {}
 
-double Triangle::intersect(const cv::Vec3i& raySource, const cv::Vec3i rayDir) const
+double Triangle::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const
 {
     auto e1 = p2_ - p1_;
     auto e2 = p3_ - p1_;
@@ -36,8 +36,20 @@ double Triangle::intersect(const cv::Vec3i& raySource, const cv::Vec3i rayDir) c
     return -1;
 }
 
-cv::Vec3i Triangle::getNormalVect(const cv::Vec3i) const
+cv::Vec3d Triangle::getNormalVect(const cv::Vec3d) const
 {
     return cv::normalize((p2_ - p1_).cross(p3_ - p1_));
 }
+
+void Triangle::translate(const cv::Vec3d& vec)
+{
+
+}
+
+void Triangle::scale(double factor)
+{
+
+}
+
+
 }

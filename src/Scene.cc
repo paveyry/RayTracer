@@ -82,7 +82,7 @@ void Scene::load_scene(std::string file_name)
             cv::Vec3i pos;
             cv::Vec3i col;
             iss >> pos.val[0] >> pos.val[1] >> pos.val[2] >> col.val[0] >> col.val[1] >> col.val[2];
-            lights_.push_back(new Light(pos, col));
+            lights_.push_back(Light(pos, col));
         }
         else if (word.compare("Sphere") == 0)
         {
@@ -98,7 +98,7 @@ void Scene::load_scene(std::string file_name)
                 ref = shapes::ReflectionType::SPECULAR;
             else
                 ref = shapes::ReflectionType::DIFFUSED;
-            spheres_.push_back(new shapes::Sphere(c, r, col, alpha, ref));
+            spheres_.push_back(shapes::Sphere(c, r, col, alpha, ref));
         }
         else if (word.compare("Triangle") == 0)
         {
@@ -116,7 +116,7 @@ void Scene::load_scene(std::string file_name)
                 ref = shapes::ReflectionType::SPECULAR;
             else
                 ref = shapes::ReflectionType::DIFFUSED;
-            triangles_.push_back(new shapes::Triangle(p1, p2, p3, col, alpha, ref));
+            triangles_.push_back(shapes::Triangle(p1, p2, p3, col, alpha, ref));
         }
     }
     file.close();

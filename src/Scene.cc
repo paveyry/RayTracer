@@ -1,6 +1,6 @@
 #include "Scene.hh"
 
-Scene::Scene(std::string file_name)
+Scene::Scene(const std::string& file_name)
 {
     load_scene(file_name);
 }
@@ -15,7 +15,7 @@ void Scene::compute_image()
             double pY = (1 - 2 * (y + 0.5) / camera_->height_) * camera_->angle_;
 
             // - rayOrigin in the formula but here its {0, 0, 0} ...
-            cv::Vec3d rayDirection = cv::Vec3d{static_cast<int>(pX), static_cast<int>(pY), -1};
+            cv::Vec3d rayDirection = cv::Vec3d{pX, pY, -1};
 
             rayDirection = applyTransform(rayDirection, camera_->transformView_);
             rayDirection = cv::normalize(rayDirection);
@@ -26,34 +26,34 @@ void Scene::compute_image()
     //save_image("yolo", image);
 }
 
-cv::Vec3d Scene::send_ray(cv::Vec3d rayOrigin, cv::Vec3d rayDirection, int recursion)
+cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion)
 {
     std::cout << "FIXME" << std::endl;
     return cv::Vec3d{0, 0, 0};
 }
 
-cv::Vec3d Scene::applyTransform(cv::Vec3d input, cv::Mat t)
+cv::Vec3d Scene::applyTransform(const cv::Vec3d& input, const cv::Mat& t)
 {
     cv::Vec3d result;
-    result.val[0] = input.dot(cv::Vec3d{t.at<int>(0, 0), t.at<int>(0, 1), t.at<int>(0, 2)});
-    result.val[1] = input.dot(cv::Vec3d{t.at<int>(1, 0), t.at<int>(1, 1), t.at<int>(1, 2)});
-    result.val[2] = input.dot(cv::Vec3d{t.at<int>(2, 0), t.at<int>(2, 1), t.at<int>(2, 2)});
+    result.val[0] = input.dot(cv::Vec3d{t.at<double>(0, 0), t.at<double>(0, 1), t.at<double>(0, 2)});
+    result.val[1] = input.dot(cv::Vec3d{t.at<double>(1, 0), t.at<double>(1, 1), t.at<double>(1, 2)});
+    result.val[2] = input.dot(cv::Vec3d{t.at<double>(2, 0), t.at<double>(2, 1), t.at<double>(2, 2)});
     return result;
 }
 
-void Scene::show_image(cv::Mat image)
+void Scene::show_image(const cv::Mat& image)
 {
     cv::namedWindow("generated", cv::WINDOW_NORMAL);
     cv::imshow("generated", image);
     cv::waitKey(0);
 }
 
-void Scene::save_image(std::string filename, cv::Mat image)
+void Scene::save_image(const std::string& filename, const cv::Mat& image)
 {
     cv::imwrite(filename, image);
 }
 
-void Scene::load_scene(std::string file_name)
+void Scene::load_scene(const std::string& file_name)
 {
     std::ifstream file;
     file.open(file_name);

@@ -42,7 +42,7 @@ cv::Vec3d Sphere::getNormalVect(const cv::Vec3d pt) const
 }
 
 
-virtual void Sphere::translate(const cv::Vec3d& vec)
+void Sphere::translate(const cv::Vec3d& vec)
 {
     center_ += vec;
 }

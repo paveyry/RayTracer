@@ -15,20 +15,20 @@
 class Scene
 {
 public:
-    Scene(std::string file_name);
+    Scene(const std::string& file_name);
 
     void compute_image();
-    cv::Vec3d send_ray(cv::Vec3d rayOrigin, cv::Vec3d rayDirection, int recursion);
+    cv::Vec3d send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion);
 
     template <class T>
     std::pair<T, double> find_intersection(T shape, cv::Vec3d rayOrigin, cv::Vec3d rayDirection);
 
-    cv::Vec3d applyTransform(cv::Vec3d input, cv::Mat t);
+    cv::Vec3d applyTransform(const cv::Vec3d& input, const cv::Mat& t);
 
-    void show_image(cv::Mat image);
-    void save_image(std::string filename, cv::Mat image);
+    void show_image(const cv::Mat& image);
+    void save_image(const std::string& filename, const cv::Mat& image);
 
-    void load_scene(std::string file_name);
+    void load_scene(const std::string& file_name);
 
 public:
     Camera* camera_;

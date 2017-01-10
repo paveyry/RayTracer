@@ -18,10 +18,11 @@ public:
     Scene(const std::string& file_name);
 
     void compute_image();
-    cv::Vec3d send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion);
+    cv::Vec3b send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion);
 
     template <class T>
-    std::pair<T, double> find_intersection(T shape, cv::Vec3d rayOrigin, cv::Vec3d rayDirection);
+    std::pair<const shapes::Shape*, double> find_intersection(const T& shape, std::pair<const shapes::Shape*, double> result,
+                                            const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection);
 
     cv::Vec3d applyTransform(const cv::Vec3d& input, const cv::Mat& t);
 
@@ -38,7 +39,14 @@ public:
 };
 
 template <class T>
-std::pair<T, double> Scene::find_intersection(T shape, cv::Vec3d rayOrigin, cv::Vec3d rayDirection)
+std::pair<const shapes::Shape*, double> Scene::find_intersection(const T& shape, std::pair<const shapes::Shape*, double> result,
+                                               const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection)
 {
-    std::cout << "lol" << std::endl;
+    double point = shape.intersect(rayOrigin, rayDirection);
+    if (point > 0 and result.second > point)
+    {
+        result.second = point;
+        result.first = &shape;
+    }
+    return result;
 }

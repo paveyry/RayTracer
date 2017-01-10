@@ -22,14 +22,31 @@ void Scene::compute_image()
 
             image.at<cv::Vec3d>(x, y) = send_ray(cv::Vec3d{0, 0, 0}, rayDirection, 0);
         }
-    //show_image(image);
+    show_image(image);
     //save_image("yolo", image);
 }
 
-cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion)
+cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion)
 {
-    std::cout << "FIXME" << std::endl;
-    return cv::Vec3d{0, 0, 0};
+    std::pair<const shapes::Shape*, double> result;
+    result.first = NULL;
+    result.second = std::numeric_limits<double>::max();
+
+    for (std::vector<shapes::Sphere>::iterator it = spheres_.begin() ; it != spheres_.end(); ++it)
+        result = find_intersection((*it), result, rayOrigin, rayDirection);
+    for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
+        result = find_intersection((*it), result, rayOrigin, rayDirection);
+
+    // Case no intersection
+    if (result.first == NULL and result.second == std::numeric_limits<double>::max())
+        return cv::Vec3b{0, 0, 0};
+
+    cv::Vec3d intersectionPoint = rayOrigin + rayDirection * result.second;
+    cv::Vec3d normal = result.first->getNormalVect(intersectionPoint);
+
+    cv::Vec3b color = cv::Vec3b{0, 0, 0};
+
+    return color;
 }
 
 cv::Vec3d Scene::applyTransform(const cv::Vec3d& input, const cv::Mat& t)

@@ -7,7 +7,7 @@ Scene::Scene(const std::string& file_name)
 
 void Scene::compute_image()
 {
-    cv::Mat3d image = cv::Mat3d(camera_->width_, camera_->height_, cv::Vec3d{0,0,0});
+    cv::Mat3b image = cv::Mat3b(camera_->width_, camera_->height_, cv::Vec3d{0,0,0});
     for (int y = 0; y < camera_->height_; ++y)
         for (int x = 0; x < camera_->width_; ++x)
         {
@@ -20,7 +20,7 @@ void Scene::compute_image()
             rayDirection = applyTransform(rayDirection, camera_->transformView_);
             rayDirection = cv::normalize(rayDirection);
 
-            image.at<cv::Vec3d>(x, y) = send_ray(cv::Vec3d{0, 0, 0}, rayDirection, 0);
+            image.at<cv::Vec3b>(x, y) = send_ray(cv::Vec3d{0, 0, 0}, rayDirection, 0);
         }
     show_image(image);
     //save_image("yolo", image);
@@ -34,18 +34,50 @@ cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
 
     for (std::vector<shapes::Sphere>::iterator it = spheres_.begin() ; it != spheres_.end(); ++it)
         result = find_intersection((*it), result, rayOrigin, rayDirection);
-    for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
-        result = find_intersection((*it), result, rayOrigin, rayDirection);
+
+    //std::cout << (result.first == NULL) << std::endl;
+    /*for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
+        result = find_intersection((*it), result, rayOrigin, rayDirection);*/
 
     // Case no intersection
-    if (result.first == NULL and result.second == std::numeric_limits<double>::max())
+    if (result.first == NULL and result.second == std::numeric_limits<double>::max()) {
         return cv::Vec3b{0, 0, 0};
+    }
+
+    std::cout << "lol" << std::endl;
 
     cv::Vec3d intersectionPoint = rayOrigin + rayDirection * result.second;
     cv::Vec3d normal = result.first->getNormalVect(intersectionPoint);
 
     cv::Vec3b color = cv::Vec3b{0, 0, 0};
 
+    // Case if diffused shape or recursion depth reached
+    for (std::vector<Light>::iterator it = lights_.begin(); it != lights_.end(); ++it)
+    {
+        /*checking if ray from light to object is intervened then shadow else light*/
+        cv::Vec3d lightOrigin = (*it).position_;
+        cv::Vec3d lightDirection = cv::normalize(intersectionPoint - lightOrigin);
+        result.second = std::numeric_limits<double>::max();
+
+        for (std::vector<shapes::Sphere>::iterator it = spheres_.begin() ; it != spheres_.end(); ++it)
+            result = find_intersection((*it), result, lightOrigin, lightDirection);
+        /*for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
+            result = find_intersection((*it), result, lightOrigin, lightDirection);*/
+
+        cv::Vec3d lip = lightOrigin + lightDirection * result.second;
+        if(intersectionPoint.val[0] == lip.val[0] and intersectionPoint.val[1] == lip.val[1] and
+            intersectionPoint.val[2] == lip.val[2])
+        {
+            lightDirection = lightDirection * -1;
+            double colorFactor = normal.dot(lightDirection);
+            if(colorFactor > 0){
+                /*if diffused object only then phong model for adding up diffused component*/
+                color.val[0] += result.first->color_.val[0] * (*it).color_.val[0] * colorFactor;
+                color.val[1] += result.first->color_.val[1] * (*it).color_.val[1] * colorFactor;
+                color.val[2] += result.first->color_.val[2] * (*it).color_.val[2] * colorFactor;
+            }
+        }
+    }
     return color;
 }
 

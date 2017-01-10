@@ -1,6 +1,6 @@
 #include "Light.hh"
 
-Light::Light(cv::Vec3d position, cv::Vec3d color)
+Light::Light(cv::Vec3d position, cv::Vec3b color)
     : position_(position)
     , color_(color)
 {}

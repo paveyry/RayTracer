@@ -9,7 +9,7 @@
 int main()
 {
     std::cout << "Main launched" << std::endl;
-    //Scene* scene = new Scene("inputs/input.txt");
-    //scene->compute_image();
+    Scene* scene = new Scene("inputs/input.txt");
+    scene->compute_image();
     return 0;
 }

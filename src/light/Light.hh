@@ -5,9 +5,9 @@ class Light
 {
 public:
     // CONSTRUCTOR
-    Light(cv::Vec3d position, cv::Vec3d color);
+    Light(cv::Vec3d position, cv::Vec3b color);
 
 public:
     cv::Vec3d position_;
-    cv::Vec3d color_;
+    cv::Vec3b color_;
 };

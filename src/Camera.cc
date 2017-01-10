@@ -1,6 +1,6 @@
 #include "Camera.hh"
 
-Camera::Camera(cv::Vec3i pos, cv::Vec3i lookAt, cv::Vec3i up, double fov, int width, int height)
+Camera::Camera(cv::Vec3d pos, cv::Vec3d lookAt, cv::Vec3d up, double fov, int width, int height)
     : pos_{pos}
     , lookAt_{lookAt}
     , up_{up}

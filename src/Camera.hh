@@ -5,7 +5,7 @@ class Camera
 {
 public:
     // CONSTRUCTOR
-    Camera(cv::Vec3i pos, cv::Vec3i lookAt, cv::Vec3i up, double fov, int width, int height);
+    Camera(cv::Vec3d pos, cv::Vec3d lookAt, cv::Vec3d up, double fov, int width, int height);
 
 public:
     double aspectRatio_;
@@ -15,13 +15,13 @@ public:
     int height_;
 
 private:
-    cv::Vec3i pos_;
-    cv::Vec3i lookAt_;
-    cv::Vec3i up_;
+    cv::Vec3d pos_;
+    cv::Vec3d lookAt_;
+    cv::Vec3d up_;
     double fov_;
 
     // Attributes computed using the previous ones.
-    cv::Vec3i viewDirection_;
-    cv::Vec3i U_;
-    cv::Vec3i V_;
+    cv::Vec3d viewDirection_;
+    cv::Vec3d U_;
+    cv::Vec3d V_;
 };

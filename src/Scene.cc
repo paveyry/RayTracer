@@ -47,9 +47,15 @@ cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
 
     cv::Vec3b color = cv::Vec3b{0, 0, 0};
 
+    if (normal.dot(rayDirection) > 0)
+        normal *= -1;
+
     // Case if diffused shape or recursion depth reached
-    if (result.first->reflectionType_ == shapes::DIFFUSED)
+    if (result.first->reflectionType_ == shapes::DIFFUSED || recursion >= 3)
         color = compute_diffuse_component(result, color, intersectionPoint, normal);
+    else{
+
+    }
     return color;
 }
 
@@ -73,16 +79,17 @@ cv::Vec3b Scene::compute_diffuse_component(std::pair<const shapes::Shape*, doubl
             && intersectionPoint.val[1] >= lip.val[1] - 0.00001 && intersectionPoint.val[1] <= lip.val[1] + 0.00001
             && intersectionPoint.val[2] >= lip.val[2] - 0.00001 && intersectionPoint.val[2] <= lip.val[2] + 0.00001)
         {
+            lightDirection *= -1;
             double colorFactor = normal.dot(lightDirection) * 8;
             if (colorFactor > 0) {
                 cv::Vec3d distance = (intersectionPoint - lightOrigin);
-                double d = distance.dot(distance);
+                double d = sqrt(distance.dot(distance));
                 color(0) += std::min(255., ((static_cast<double>(result.first->color_(0)) / 255.)
-                                            * (static_cast<double>(it->color_(0))) * colorFactor * (1 / d)));
+                                            * (static_cast<double>(it->color_(0))) * colorFactor / d));
                 color(1) += std::min(255., ((static_cast<double>(result.first->color_(1)) / 255.)
-                                            * (static_cast<double>(it->color_(1))) * colorFactor * (1 / d)));
+                                            * (static_cast<double>(it->color_(1))) * colorFactor / d));
                 color(2) += std::min(255., ((static_cast<double>(result.first->color_(2)) / 255.)
-                                            * (static_cast<double>(it->color_(2))) * colorFactor * (1 / d))); }
+                                            * (static_cast<double>(it->color_(2))) * colorFactor / d)); }
         }
     }
     return color;

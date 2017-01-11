@@ -62,19 +62,20 @@ cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
         for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
             result = find_intersection((*it), result, lightOrigin, lightDirection);
 
-        cv::Vec3d lip = lightOrigin + lightDirection * result.second;
+        cv::Vec3d lip = (lightOrigin + lightDirection * result.second);
+        double colorFactor = normal.dot(lightDirection) * 10;
         if (intersectionPoint.val[0] >= lip.val[0] - 0.00001 && intersectionPoint.val[0] <= lip.val[0] + 0.00001
             && intersectionPoint.val[1] >= lip.val[1] - 0.00001 && intersectionPoint.val[1] <= lip.val[1] + 0.00001
-            && intersectionPoint.val[2] >= lip.val[2] - 0.00001 && intersectionPoint.val[2] <= lip.val[2] + 0.00001)
-        {
-            //lightDirection = lightDirection * -1;
-            double colorFactor = normal.dot(lightDirection);
-            if(colorFactor > 0){
-                /*if diffused object only then phong model for adding up diffused component*/
-                color.val[0] += result.first->color_.val[0] * (*it).color_.val[0] * colorFactor;
-                color.val[1] += result.first->color_.val[1] * (*it).color_.val[1] * colorFactor;
-                color.val[2] += result.first->color_.val[2] * (*it).color_.val[2] * colorFactor;
-            }
+            && intersectionPoint.val[2] >= lip.val[2] - 0.00001 && intersectionPoint.val[2] <= lip.val[2] + 0.00001) {
+            if (colorFactor > 0) {
+                cv::Vec3d distance = (intersectionPoint - lightOrigin);
+                double d = distance.dot(distance);
+                color(0) += std::min(255., ((static_cast<double>(result.first->color_(0)) / 255.)
+                                            * (static_cast<double>(it->color_(0))) * colorFactor * (1 / d)));
+                color(1) += std::min(255., ((static_cast<double>(result.first->color_(1)) / 255.)
+                                            * (static_cast<double>(it->color_(1))) * colorFactor * (1 / d)));
+                color(2) += std::min(255., ((static_cast<double>(result.first->color_(2)) / 255.)
+                                            * (static_cast<double>(it->color_(2))) * colorFactor * (1 / d))); }
         }
     }
     return color;

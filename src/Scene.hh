@@ -43,14 +43,11 @@ std::pair<const shapes::Shape*, double> Scene::find_intersection(const T& shape,
                                                                  const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection)
 {
     double point = shape.intersect(rayOrigin, rayDirection);
-    //std::cout << "Test" << std::endl;
     if (point > 0 and result.second > point)
     {
         result.second = point;
         result.first = &shape;
-        //std::cout << result.second << std::endl;
-        //std::cout << "Test1" << std::endl;
+
     }
-    //std::cout << "Test2" << std::endl;
     return result;
 }

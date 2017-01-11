@@ -1,4 +1,5 @@
 #include "Triangle.hh"
+#include "tools.hh"
 
 namespace shapes
 {
@@ -56,7 +57,9 @@ void Triangle::scale(double factor)
 
 void Triangle::rotate(double angleX, double angleY, double angleZ, const cv::Vec3d& origin)
 {
-    return;
+    p1_ = rotateVec(p1_, angleX, angleY, angleZ, origin);
+    p2_ = rotateVec(p2_, angleX, angleY, angleZ, origin);
+    p3_ = rotateVec(p3_, angleX, angleY, angleZ, origin);
 }
 
 cv::Vec3d Triangle::barycenter() const

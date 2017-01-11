@@ -1,6 +1,7 @@
 #include <limits>
 
 #include "Sphere.hh"
+#include "tools.hh"
 #include <iostream>
 
 namespace shapes
@@ -59,6 +60,11 @@ void Sphere::scale(double factor)
     if (factor <= 0)
         return;
     radius_ *= factor;
+}
+
+void Sphere::rotate(double angleX, double angleY, double angleZ, const cv::Vec3d& origin)
+{
+    center_ = rotateVec(center_, angleX, angleY, angleZ, origin);
 }
 
 

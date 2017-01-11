@@ -18,7 +18,7 @@ public:
 
     virtual void scale(double factor) override;
 
-    void rotate(double angleX, double angleY, double angleZ, const cv::Vec3d& origin);
+    virtual void rotate(double angleX, double angleY, double angleZ, const cv::Vec3d& origin) override;
 
     cv::Vec3d barycenter() const;
 public:

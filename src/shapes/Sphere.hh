@@ -18,6 +18,8 @@ public:
 
     virtual void scale(double factor) override;
 
+    virtual void rotate(double angleX, double angleY, double angleZ, const cv::Vec3d& origin) override;
+
 public:
     cv::Vec3d center_;
     double radius_;

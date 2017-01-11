@@ -24,6 +24,8 @@ public:
 
     virtual void scale(double factor) = 0;
 
+    virtual void rotate(double angleX, double angleY, double angleZ, const cv::Vec3d& origin) = 0;
+
 public:
     cv::Vec3d color_;
     double alpha_;

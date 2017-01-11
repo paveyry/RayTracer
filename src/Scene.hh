@@ -48,8 +48,8 @@ std::pair<const shapes::Shape*, double> Scene::find_intersection(const T& shape,
     {
         result.second = point;
         result.first = &shape;
-        std::cout << result.second << std::endl;
-        std::cout << "Test1" << std::endl;
+        //std::cout << result.second << std::endl;
+        //std::cout << "Test1" << std::endl;
     }
     //std::cout << "Test2" << std::endl;
     return result;

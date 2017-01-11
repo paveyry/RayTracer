@@ -17,7 +17,7 @@ void Scene::compute_image()
             // - rayOrigin in the formula but here its {0, 0, 0} ...
             cv::Vec3d rayDirection = cv::Vec3d{pX, pY, -1};
 
-            rayDirection = applyTransform(rayDirection, camera_->transformView_);
+            //rayDirection = applyTransform(rayDirection, camera_->transformView_);
             rayDirection = cv::normalize(rayDirection);
 
             image.at<cv::Vec3b>(x, y) = send_ray(cv::Vec3d{0, 0, 0}, rayDirection, 0);
@@ -44,8 +44,6 @@ cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
         return cv::Vec3b{0, 0, 0};
     }
 
-    std::cout << "lol" << std::endl;
-
     cv::Vec3d intersectionPoint = rayOrigin + rayDirection * result.second;
     cv::Vec3d normal = result.first->getNormalVect(intersectionPoint);
 
@@ -61,14 +59,14 @@ cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
 
         for (std::vector<shapes::Sphere>::iterator it = spheres_.begin() ; it != spheres_.end(); ++it)
             result = find_intersection((*it), result, lightOrigin, lightDirection);
-        /*for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
-            result = find_intersection((*it), result, lightOrigin, lightDirection);*/
+        for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
+            result = find_intersection((*it), result, lightOrigin, lightDirection);
 
         cv::Vec3d lip = lightOrigin + lightDirection * result.second;
         if(intersectionPoint.val[0] == lip.val[0] and intersectionPoint.val[1] == lip.val[1] and
             intersectionPoint.val[2] == lip.val[2])
         {
-            lightDirection = lightDirection * -1;
+            //lightDirection = lightDirection * -1;
             double colorFactor = normal.dot(lightDirection);
             if(colorFactor > 0){
                 /*if diffused object only then phong model for adding up diffused component*/

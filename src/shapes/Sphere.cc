@@ -1,6 +1,7 @@
 #include <limits>
 
 #include "Sphere.hh"
+#include <iostream>
 
 namespace shapes
 {
@@ -16,21 +17,28 @@ double Sphere::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) co
     std::vector<double> intersections;
     cv::Vec3d dist = raySource - center_;
 
+    cv::Vec3d rd = cv::normalize(rayDir);
     // Solve second degree equation
-    double a = rayDir.dot(rayDir);
-    double b = 2 * rayDir.dot(dist);
+    double a = rd.dot(rd);
+    double b = 2 * rd.dot(dist);
     double c = dist.dot(dist) - radius_ * radius_;
     double delta = b * b - 4 * a * c;
     if (delta < 0)
         return -1;
-    intersections.push_back(-b + sqrt(delta) / (2 * a));
-    intersections.push_back(-b + sqrt(delta) / (2 * a));
+
+
+    intersections.push_back((-b + sqrt(delta)) / (2 * a));
+    intersections.push_back((-b + sqrt(delta)) / (2 * a));
 
     // Find closest intersection
     double closestIntersection = std::numeric_limits<double>::max();
     for (size_t i = 0; i < intersections.size(); ++i)
+    {
         if (intersections[i] > 0 && intersections[i] < closestIntersection)
+        {
             closestIntersection = intersections[i];
+        }
+    }
 
     // Return the closest intersection if there was a valid intersection
     return (closestIntersection != std::numeric_limits<double>::max()) ? closestIntersection : -1;

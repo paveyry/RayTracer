@@ -20,13 +20,18 @@ void Scene::compute_image()
             //rayDirection = applyTransform(rayDirection, camera_->transformView_);
             rayDirection = cv::normalize(rayDirection);
 
-            image.at<cv::Vec3b>(x, y) = send_ray(cv::Vec3d{0, 0, 0}, rayDirection, 0);
+            cv::Vec3d color = send_ray(cv::Vec3d{0, 0, 0}, rayDirection, 0);
+            color(0) = std::min(255., color(0));
+            color(1) = std::min(255., color(1));
+            color(2) = std::min(255., color(2));
+
+            image.at<cv::Vec3b>(x, y) = color;
         }
     show_image(image);
     //save_image("yolo", image);
 }
 
-cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion)
+cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion)
 {
     std::pair<const shapes::Shape*, double> result;
     result.first = nullptr;
@@ -39,13 +44,13 @@ cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
 
     // Case no intersection
     if (result.first == nullptr and result.second == std::numeric_limits<double>::max()) {
-        return cv::Vec3b{0, 0, 0};
+        return cv::Vec3d{0., 0., 0.};
     }
 
     cv::Vec3d intersectionPoint = rayOrigin + rayDirection * result.second;
     cv::Vec3d normal = result.first->getNormalVect(intersectionPoint);
 
-    cv::Vec3b color = cv::Vec3b{0, 0, 0};
+    cv::Vec3d color = cv::Vec3d{0., 0., 0.};
 
     if (normal.dot(rayDirection) > 0)
         normal *= -1;
@@ -59,7 +64,7 @@ cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
     return color;
 }
 
-cv::Vec3b Scene::compute_diffuse_component(std::pair<const shapes::Shape*, double> result, cv::Vec3b color,
+cv::Vec3d Scene::compute_diffuse_component(std::pair<const shapes::Shape*, double> result, cv::Vec3d color,
                                             const cv::Vec3d &intersectionPoint, const cv::Vec3d &normal)
 {
     for (std::vector<Light>::iterator it = lights_.begin(); it != lights_.end(); ++it)
@@ -84,12 +89,10 @@ cv::Vec3b Scene::compute_diffuse_component(std::pair<const shapes::Shape*, doubl
             if (colorFactor > 0) {
                 cv::Vec3d distance = (intersectionPoint - lightOrigin);
                 double d = sqrt(distance.dot(distance));
-                color(0) += std::min(255., ((static_cast<double>(result.first->color_(0)) / 255.)
-                                            * (static_cast<double>(it->color_(0))) * colorFactor / d));
-                color(1) += std::min(255., ((static_cast<double>(result.first->color_(1)) / 255.)
-                                            * (static_cast<double>(it->color_(1))) * colorFactor / d));
-                color(2) += std::min(255., ((static_cast<double>(result.first->color_(2)) / 255.)
-                                            * (static_cast<double>(it->color_(2))) * colorFactor / d)); }
+                color(0) += (result.first->color_(0) / 255.) * it->color_(0) * colorFactor / d;
+                color(1) += (result.first->color_(1) / 255.) * it->color_(1) * colorFactor / d;
+                color(2) += (result.first->color_(2) / 255.) * it->color_(2) * colorFactor / d;
+            }
         }
     }
     return color;

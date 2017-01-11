@@ -15,7 +15,7 @@ int main()
         //sp.translate(cv::Vec3d(1., 1., 0));
         //sp.scale(2.);
     scene->triangles_[0].translate(cv::Vec3d(-1.6, 1, -1.4));
-    scene->triangles_[0].scale(0.4);
+    //scene->triangles_[0].scale(0.4);
     //scene->triangles_[0].rotate(0.5, 0., 0., scene->triangles_[0].barycenter());
     std::cout << scene->triangles_.size();
     scene->compute_image();

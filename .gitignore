@@ -5,3 +5,4 @@ RayTracer
 *.swp
 ._*
 .DS_Store
+*.dSYM

@@ -57,6 +57,11 @@ void Triangle::scale(double factor)
 {
     if (factor <= 0)
         return;
+    
+    cv::Vec3d b = barycenter();
+    p1_ = b + (p1_ - b) * factor;
+    p2_ = b + (p2_ - b) * factor;
+    p3_ = b + (p3_ - b) * factor;
 }
 
 void Triangle::rotate(double angleX, double angleY, double angleZ, const cv::Vec3d& origin)

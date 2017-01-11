@@ -25,7 +25,7 @@ cv::Vec3d rotateVec(const cv::Vec3d& point, double angleX, double angleY, double
     rot(3, 1) = center(1) - rot(1, 0) * center(0) - rot(1, 1) * center(1) - rot(1, 2) * center(2);
     rot(3, 2) = center(2) - rot(2, 0) * center(0) - rot(2, 1) * center(1) - rot(2, 2) * center(2);
     rot(3, 3) = 1.;
-    cv::Vec4d res = rot * cv::Vec4d(point(0), point(1), point(2), point(3), 1);
+    cv::Vec4d res = rot * cv::Vec4d(point(0), point(1), point(2), 1);
     return cv::Vec3d(res(0), res(1), res(2));
 }
 

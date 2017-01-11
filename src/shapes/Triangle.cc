@@ -43,13 +43,25 @@ cv::Vec3d Triangle::getNormalVect(const cv::Vec3d) const
 
 void Triangle::translate(const cv::Vec3d& vec)
 {
-
+    p1_ += vec;
+    p2_ += vec;
+    p3_ += vec;
 }
 
 void Triangle::scale(double factor)
 {
-
+    if (factor <= 0)
+        return;
 }
 
+void Triangle::rotate(double angleX, double angleY, double angleZ, const cv::Vec3d& origin)
+{
+    return;
+}
+
+cv::Vec3d Triangle::barycenter() const
+{
+    return 2. * ((p2_ + p3_) / 2. + p1_) / 3.;
+}
 
 }

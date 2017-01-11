@@ -41,7 +41,6 @@ cv::Vec3d Sphere::getNormalVect(const cv::Vec3d pt) const
     return cv::normalize(pt - center_);
 }
 
-
 void Sphere::translate(const cv::Vec3d& vec)
 {
     center_ += vec;
@@ -49,6 +48,8 @@ void Sphere::translate(const cv::Vec3d& vec)
 
 void Sphere::scale(double factor)
 {
+    if (factor <= 0)
+        return;
     radius_ *= factor;
 }
 

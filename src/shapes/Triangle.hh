@@ -17,6 +17,10 @@ public:
     virtual void translate(const cv::Vec3d& vec) override;
 
     virtual void scale(double factor) override;
+
+    void rotate(double angleX, double angleY, double angleZ, const cv::Vec3d& origin);
+
+    cv::Vec3d barycenter() const;
 public:
     cv::Vec3d p1_;
     cv::Vec3d p2_;

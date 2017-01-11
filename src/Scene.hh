@@ -19,6 +19,8 @@ public:
 
     void compute_image();
     cv::Vec3b send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion);
+    cv::Vec3b compute_diffuse_component(std::pair<const shapes::Shape*, double> result, cv::Vec3b color,
+                                        const cv::Vec3d &intersectionPoint, const cv::Vec3d &normal);
 
     template <class T>
     std::pair<const shapes::Shape*, double> find_intersection(const T& shape, std::pair<const shapes::Shape*, double> result,

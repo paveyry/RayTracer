@@ -29,18 +29,16 @@ void Scene::compute_image()
 cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion)
 {
     std::pair<const shapes::Shape*, double> result;
-    result.first = NULL;
+    result.first = nullptr;
     result.second = std::numeric_limits<double>::max();
 
     for (std::vector<shapes::Sphere>::iterator it = spheres_.begin() ; it != spheres_.end(); ++it)
         result = find_intersection((*it), result, rayOrigin, rayDirection);
-
-    //std::cout << (result.first == NULL) << std::endl;
-    /*for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
-        result = find_intersection((*it), result, rayOrigin, rayDirection);*/
+    for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
+        result = find_intersection((*it), result, rayOrigin, rayDirection);
 
     // Case no intersection
-    if (result.first == NULL and result.second == std::numeric_limits<double>::max()) {
+    if (result.first == nullptr and result.second == std::numeric_limits<double>::max()) {
         return cv::Vec3b{0, 0, 0};
     }
 
@@ -50,6 +48,14 @@ cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
     cv::Vec3b color = cv::Vec3b{0, 0, 0};
 
     // Case if diffused shape or recursion depth reached
+    if (result.first->reflectionType_ == shapes::DIFFUSED)
+        color = compute_diffuse_component(result, color, intersectionPoint, normal);
+    return color;
+}
+
+cv::Vec3b Scene::compute_diffuse_component(std::pair<const shapes::Shape*, double> result, cv::Vec3b color,
+                                            const cv::Vec3d &intersectionPoint, const cv::Vec3d &normal)
+{
     for (std::vector<Light>::iterator it = lights_.begin(); it != lights_.end(); ++it)
     {
         /*checking if ray from light to object is intervened then shadow else light*/
@@ -67,7 +73,7 @@ cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
             && intersectionPoint.val[1] >= lip.val[1] - 0.00001 && intersectionPoint.val[1] <= lip.val[1] + 0.00001
             && intersectionPoint.val[2] >= lip.val[2] - 0.00001 && intersectionPoint.val[2] <= lip.val[2] + 0.00001)
         {
-            double colorFactor = normal.dot(lightDirection) * 10;
+            double colorFactor = normal.dot(lightDirection) * 8;
             if (colorFactor > 0) {
                 cv::Vec3d distance = (intersectionPoint - lightOrigin);
                 double d = distance.dot(distance);

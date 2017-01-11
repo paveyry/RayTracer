@@ -1,6 +1,8 @@
 #include "Triangle.hh"
 #include "tools.hh"
 
+#include <iostream>
+
 namespace shapes
 {
 
@@ -14,9 +16,11 @@ Triangle::Triangle(cv::Vec3d p1, cv::Vec3d p2, cv::Vec3d p3, cv::Vec3b color, do
 
 double Triangle::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const
 {
+    double rdl = cv::norm(rayDir);
+    auto rd = cv::normalize(rayDir);
     auto e1 = p2_ - p1_;
     auto e2 = p3_ - p1_;
-    auto h = rayDir.cross(e2);
+    auto h = rd.cross(e2);
     auto a = e1.dot(h);
     if (a > -0.00001 && a < 0.00001)
         return -1;
@@ -28,12 +32,12 @@ double Triangle::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) 
         return -1;
 
     auto q = s.cross(e1);
-    double v = f * rayDir.dot(q);
+    double v = f * rd.dot(q);
     if (v < 0. || u + v > 1.)
         return -1;
     double t = f * e2.dot(q);
     if (t > 0.00001)
-        return t * sqrt(rayDir.dot(rayDir));
+        return t / rdl;
     return -1;
 }
 

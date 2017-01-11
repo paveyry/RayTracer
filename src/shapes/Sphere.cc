@@ -29,7 +29,7 @@ double Sphere::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) co
 
 
     intersections.push_back((-b + sqrt(delta)) / (2 * a));
-    intersections.push_back((-b + sqrt(delta)) / (2 * a));
+    intersections.push_back((-b - sqrt(delta)) / (2 * a));
 
     // Find closest intersection
     double closestIntersection = std::numeric_limits<double>::max();

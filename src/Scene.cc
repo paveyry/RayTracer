@@ -63,10 +63,11 @@ cv::Vec3b Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
             result = find_intersection((*it), result, lightOrigin, lightDirection);
 
         cv::Vec3d lip = (lightOrigin + lightDirection * result.second);
-        double colorFactor = normal.dot(lightDirection) * 10;
         if (intersectionPoint.val[0] >= lip.val[0] - 0.00001 && intersectionPoint.val[0] <= lip.val[0] + 0.00001
             && intersectionPoint.val[1] >= lip.val[1] - 0.00001 && intersectionPoint.val[1] <= lip.val[1] + 0.00001
-            && intersectionPoint.val[2] >= lip.val[2] - 0.00001 && intersectionPoint.val[2] <= lip.val[2] + 0.00001) {
+            && intersectionPoint.val[2] >= lip.val[2] - 0.00001 && intersectionPoint.val[2] <= lip.val[2] + 0.00001)
+        {
+            double colorFactor = normal.dot(lightDirection) * 10;
             if (colorFactor > 0) {
                 cv::Vec3d distance = (intersectionPoint - lightOrigin);
                 double d = distance.dot(distance);

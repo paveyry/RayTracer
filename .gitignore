@@ -1,4 +1,5 @@
 RayTracer
+*.png
 *.iml
 .idea
 *.o

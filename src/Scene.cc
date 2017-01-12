@@ -5,30 +5,30 @@ Scene::Scene(const std::string& file_name)
     load_scene(file_name);
 }
 
-void Scene::compute_image()
+cv::Mat3b Scene::compute_image(double samplingNumber)
 {
     cv::Mat3b image = cv::Mat3b(camera_->width_, camera_->height_, cv::Vec3d{0,0,0});
     for (int y = 0; y < camera_->height_; ++y)
         for (int x = 0; x < camera_->width_; ++x)
         {
-            double pX = (2 * ((x + 0.5) / camera_->width_) - 1) * camera_->angle_ * camera_->aspectRatio_;
-            double pY = (1 - 2 * (y + 0.5) / camera_->height_) * camera_->angle_;
-
-            // - rayOrigin in the formula but here its {0, 0, 0} ...
-            cv::Vec3d rayDirection = cv::Vec3d{pX, pY, -1};
-
-            //rayDirection = applyTransform(rayDirection, camera_->transformView_);
-            rayDirection = cv::normalize(rayDirection);
-
-            cv::Vec3d color = send_ray(cv::Vec3d{0, 0, 0}, rayDirection, 0);
+            cv::Vec3d color = cv::Vec3d{0, 0, 0};
+            for (int i = 0; i < sqrt(samplingNumber); ++i) {
+                double sx = (double)x + ((double)i / sqrt(samplingNumber));
+                double sy = (double)y + ((double)i / sqrt(samplingNumber));
+                double pX = (2 * ((sx + 0.5) / camera_->width_) - 1) * camera_->angle_ * camera_->aspectRatio_;
+                double pY = (1 - 2 * (sy + 0.5) / camera_->height_) * camera_->angle_;
+                cv::Vec3d rayDirection = cv::Vec3d{pX, pY, -1};
+                rayDirection = cv::normalize(rayDirection);
+                color += send_ray(camera_->pos_, rayDirection, 0);
+            }
+            color /= sqrt(samplingNumber);
             color(0) = std::min(255., color(0));
             color(1) = std::min(255., color(1));
             color(2) = std::min(255., color(2));
 
             image.at<cv::Vec3b>(x, y) = color;
         }
-    show_image(image);
-    //save_image("yolo", image);
+    return image;
 }
 
 cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion)

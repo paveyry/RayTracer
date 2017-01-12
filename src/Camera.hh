@@ -13,9 +13,9 @@ public:
     cv::Mat transformView_;
     int width_;
     int height_;
+    cv::Vec3d pos_;
 
 private:
-    cv::Vec3d pos_;
     cv::Vec3d lookAt_;
     cv::Vec3d up_;
     double fov_;

@@ -17,7 +17,7 @@ class Scene
 public:
     Scene(const std::string& file_name);
 
-    void compute_image();
+    cv::Mat3b compute_image(double samplingNumber);
     cv::Vec3d send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion);
     cv::Vec3d compute_diffuse_component(std::pair<const shapes::Shape*, double> result, cv::Vec3d color,
                                         const cv::Vec3d &intersectionPoint, const cv::Vec3d &normal,

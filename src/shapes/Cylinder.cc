@@ -4,7 +4,7 @@
 namespace shapes
 {
 Cylinder::Cylinder(const cv::Vec3d& center, double radius, double height, const cv::Vec3d& upDir,
-                   cv::Vec3b color, double alpha, ReflectionType reflectionType)
+                   cv::Vec3d color, double alpha, ReflectionType reflectionType)
     : Shape{color, alpha, reflectionType}
     , center_{center}
     , radius_{radius}

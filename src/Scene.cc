@@ -224,6 +224,23 @@ void Scene::load_scene(const std::string& file_name)
                 ref = shapes::ReflectionType::DIFFUSED;
             triangles_.push_back(shapes::Triangle(p1, p2, p3, col, alpha, ref));
         }
+        else if (word.compare("Cylinder") == 0)
+        {
+            cv::Vec3d c;
+            double r;
+            double h;
+            cv::Vec3d updir;
+            cv::Vec3d col;
+            double alpha;
+            shapes::ReflectionType ref;
+            iss >> c(0) >> c(1) >> c(2) >> r >> h >> updir(0) >> updir(1) >> updir(2);
+            iss >> col(0) >> col(1) >> col(2) >> alpha >> word;
+            if (word.compare("SPECULAR") == 0)
+                ref = shapes::ReflectionType::SPECULAR;
+            else
+                ref = shapes::ReflectionType::DIFFUSED;
+            cylinders_.push_back(shapes::Cylinder(c, r, h, updir, col, alpha, ref));
+        }
     }
     file.close();
 }

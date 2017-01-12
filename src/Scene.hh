@@ -11,6 +11,7 @@
 #include "light/Light.hh"
 #include "shapes/Sphere.hh"
 #include "shapes/Triangle.hh"
+#include "shapes/Cylinder.hh"
 
 class Scene
 {
@@ -39,6 +40,7 @@ public:
     std::vector<Light> lights_;
     std::vector<shapes::Sphere> spheres_;
     std::vector<shapes::Triangle> triangles_;
+    std::vector<shapes::Cylinder> cylinders_;
 };
 
 template <class T>

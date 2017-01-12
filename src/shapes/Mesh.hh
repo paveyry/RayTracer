@@ -9,8 +9,7 @@ namespace shapes
 class Mesh
 {
 public:
-    Mesh(std::vector<Triangle>&& triangles, const cv::Vec3d& center, const cv::Vec3d& color, double alpha,
-         ReflectionType reflectionType);
+    Mesh(std::vector<Triangle>&& triangles, const cv::Vec3d& center);
 
     //Mesh(std::move(vector));
 

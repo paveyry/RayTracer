@@ -6,7 +6,7 @@
 namespace shapes
 {
 
-Triangle::Triangle(cv::Vec3d p1, cv::Vec3d p2, cv::Vec3d p3, cv::Vec3b color, double alpha,
+Triangle::Triangle(cv::Vec3d p1, cv::Vec3d p2, cv::Vec3d p3, cv::Vec3d color, double alpha,
                    ReflectionType reflectionType)
     : Shape{color, alpha, reflectionType}
     , p1_{p1}
@@ -57,7 +57,7 @@ void Triangle::scale(double factor)
 {
     if (factor <= 0)
         return;
-    
+
     cv::Vec3d b = barycenter();
     p1_ = b + (p1_ - b) * factor;
     p2_ = b + (p2_ - b) * factor;
@@ -73,7 +73,7 @@ void Triangle::rotate(double angleX, double angleY, double angleZ, const cv::Vec
 
 cv::Vec3d Triangle::barycenter() const
 {
-    return 2. * ((p2_ + p3_) / 2. + p1_) / 3.;
+    return p1_ + (2. / 3.) * ((p2_ + p3_) / 2. - p1_);
 }
 
 }

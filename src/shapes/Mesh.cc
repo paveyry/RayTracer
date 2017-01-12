@@ -4,10 +4,8 @@
 namespace shapes
 {
 
-Mesh::Mesh(std::vector<Triangle>&& triangles, const cv::Vec3d& center, const cv::Vec3d& color,
-           double alpha, ReflectionType reflectionType)
-    : Shape(color, alpha, reflectionType)
-    , triangles_{triangles}
+Mesh::Mesh(std::vector<Triangle>&& triangles, const cv::Vec3d& center)
+    : triangles_{triangles}
     , center_{center}
 {}
 

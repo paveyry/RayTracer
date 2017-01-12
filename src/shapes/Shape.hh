@@ -14,7 +14,7 @@ enum ReflectionType
 class Shape
 {
 public:
-    Shape(cv::Vec3b color, double alpha, ReflectionType reflectionType);
+    Shape(cv::Vec3d color, double alpha, ReflectionType reflectionType);
 
     virtual double intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const = 0;
 

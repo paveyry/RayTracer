@@ -7,7 +7,7 @@
 namespace shapes
 {
 
-Sphere::Sphere(cv::Vec3d center, double radius, cv::Vec3b color, double alpha, ReflectionType reflectionType)
+Sphere::Sphere(cv::Vec3d center, double radius, cv::Vec3d color, double alpha, ReflectionType reflectionType)
     : Shape{color, alpha, reflectionType}
     , center_{center}
     , radius_{radius}

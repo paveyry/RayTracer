@@ -8,7 +8,7 @@ namespace shapes
 class Triangle : public Shape
 {
 public:
-    Triangle(cv::Vec3d p1, cv::Vec3d p2, cv::Vec3d p3, cv::Vec3b color, double alpha, ReflectionType reflectionType);
+    Triangle(cv::Vec3d p1, cv::Vec3d p2, cv::Vec3d p3, cv::Vec3d color, double alpha, ReflectionType reflectionType);
 
     virtual double intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const override;
 

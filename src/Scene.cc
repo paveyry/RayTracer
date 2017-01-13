@@ -37,10 +37,12 @@ cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
     result.first = nullptr;
     result.second = std::numeric_limits<double>::max();
 
-    for (std::vector<shapes::Sphere>::iterator it = spheres_.begin() ; it != spheres_.end(); ++it)
-        result = find_intersection((*it), result, rayOrigin, rayDirection);
-    for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
-        result = find_intersection((*it), result, rayOrigin, rayDirection);
+    for (const auto& sphere : spheres_)
+        result = find_intersection(sphere, result, rayOrigin, rayDirection);
+    for (const auto& triangle : triangles_)
+        result = find_intersection(triangle, result, rayOrigin, rayDirection);
+    for (const auto& cylinder : cylinders_)
+        result = find_intersection(cylinder, result, rayOrigin, rayDirection);
 
     // Case no intersection
     if (result.first == nullptr and result.second == std::numeric_limits<double>::max()) {
@@ -101,10 +103,12 @@ cv::Vec3d Scene::compute_diffuse_component(std::pair<const shapes::Shape*, doubl
         cv::Vec3d lightDirection = cv::normalize(intersectionPoint - lightOrigin);
         result.second = std::numeric_limits<double>::max();
 
-        for (std::vector<shapes::Sphere>::iterator it = spheres_.begin() ; it != spheres_.end(); ++it)
-            result = find_intersection((*it), result, lightOrigin, lightDirection);
-        for (std::vector<shapes::Triangle>::iterator it = triangles_.begin() ; it != triangles_.end(); ++it)
-            result = find_intersection((*it), result, lightOrigin, lightDirection);
+        for (const auto& sphere : spheres_)
+            result = find_intersection(sphere, result, lightOrigin, lightDirection);
+        for (const auto& triangle : triangles_)
+            result = find_intersection(triangle, result, lightOrigin, lightDirection);
+        for (const auto& cylinder : cylinders_)
+            result = find_intersection(cylinder, result, lightOrigin, lightDirection);
 
         cv::Vec3d lip = (lightOrigin + lightDirection * result.second);
         //if (result.first->reflectionType_ == 0)

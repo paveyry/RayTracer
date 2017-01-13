@@ -1,6 +1,8 @@
 #include "Cylinder.hh"
 #include "tools.hh"
 
+#include <iostream>
+
 namespace shapes
 {
 Cylinder::Cylinder(const cv::Vec3d& center, double radius, double height, const cv::Vec3d& upDir,
@@ -17,16 +19,17 @@ double Cylinder::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) 
     double rdl = cv::norm(rayDir);
     cv::Vec3d rd = cv::normalize(rayDir);
 
+
     std::vector<double> intersections;
 
     cv::Vec3d alpha = upDir_ * rd.dot(upDir_);
     cv::Vec3d dP = raySource - center_;
     cv::Vec3d beta = upDir_ * dP.dot(upDir_);
-    cv::Vec3d upcenter = center_ + upcenter * height_;
+    cv::Vec3d upcenter = center_ + upDir_ * height_;
 
     cv::Vec3d rdminalph = rd - alpha;
     double a = rdminalph.dot(rdminalph);
-    double b = 2 * rdminalph.dot(rdminalph);
+    double b = 2 * rdminalph.dot(dP - beta);
     double c = (dP - beta).dot(dP - beta) - radius_ * radius_;
 
     double delta = b * b - 4 * a * c;
@@ -46,6 +49,7 @@ double Cylinder::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) 
         && upDir_.dot(raySource - upcenter + rd * root2) < 0)
         intersections.push_back(root2);
 
+
     double dirdot = rd.dot(upDir_);
     cv::Vec3d co;
 
@@ -60,7 +64,7 @@ double Cylinder::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) 
 
     double closestIntersection = std::numeric_limits<double>::max();
     for (double intersection : intersections)
-        if (closestIntersection < intersection && intersection >= 0)
+        if (closestIntersection > intersection && intersection >= 0)
             closestIntersection = intersection;
 
     return (closestIntersection != std::numeric_limits<double>::max()) ? closestIntersection / rdl : -1;

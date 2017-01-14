@@ -45,9 +45,8 @@ cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
         result = find_intersection(cylinder, result, rayOrigin, rayDirection);
 
     // Case no intersection
-    if (result.first == nullptr and result.second == std::numeric_limits<double>::max()) {
+    if (result.first == nullptr and result.second == std::numeric_limits<double>::max())
         return cv::Vec3d{0., 0., 0.};
-    }
 
     cv::Vec3d intersectionPoint = rayOrigin + rayDirection * result.second;
     cv::Vec3d normal = result.first->getNormalVect(intersectionPoint);
@@ -63,20 +62,32 @@ cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
 
     if(result.first->reflectionType_ == shapes::SPECULAR && recursion < 3)
     {
-        cv::Vec3d reflectionDirection = cv::normalize(rayDirection - (normal * 2 * rayDirection.dot(normal)));
+        cv::Vec3d reflectionDirection = cv::normalize(rayDirection - (2 * rayDirection.dot(normal)) * normal);
         double facingRatio = -1 * rayDirection.dot(normal);
         double fresnelEffect = 0.1 + pow(1 - facingRatio, 3) * 0.9;
 
-        cv::Vec3d reflectionColor = send_ray(intersectionPoint + (reflectionDirection * 0.01), reflectionDirection, recursion + 1);
+        cv::Vec3d reflectionColor = send_ray(intersectionPoint + reflectionDirection * 0.01, reflectionDirection, recursion + 1);
+        cv::Vec3d refractionColor = cv::Vec3d{1, 1, 1};
+        if (result.first->alpha_ > 0) {
+            double n = isIn ? result.first->alpha_ : (1 / result.first->alpha_);
+            double c1 = -rayDirection.dot(normal);
+            double c2 = 1 - (n * n * (1 - c1 * c1));
+
+            if (c2 > 0) {
+                cv::Vec3d refractionDirection = cv::normalize((rayDirection * n) + (normal * (n * c1 - sqrt(c2))));
+                cv::Vec3d refractionColor = send_ray(intersectionPoint + refractionDirection * 0.01, refractionDirection, recursion + 1);
+            }
+        }
         color(0) += (reflectionColor(0) * fresnelEffect) +
-                    (0 * (1 - fresnelEffect)) * result.first->color_(0);
+                    (refractionColor(0) * (1 - fresnelEffect)) * result.first->color_(0);
         color(1) += (reflectionColor(1) * fresnelEffect) +
-                    (0 * (1 - fresnelEffect)) * result.first->color_(1);
+                    (refractionColor(1) * (1 - fresnelEffect)) * result.first->color_(1);
         color(2) += (reflectionColor(2) * fresnelEffect) +
-                    (0 * (1 - fresnelEffect)) * result.first->color_(2);
+                    (refractionColor(2) * (1 - fresnelEffect)) * result.first->color_(2);
     }
-    else
+    else {
         color = compute_diffuse_component(result, color, intersectionPoint, normal, rayOrigin);
+    }
     return color;
 }
 
@@ -125,12 +136,11 @@ cv::Vec3d Scene::compute_diffuse_component(std::pair<const shapes::Shape*, doubl
                 double shininess = normal.dot(cv::normalize(V + lightDirection));
                  if(shininess > 0)
                  {
-                     std::cout << "toto" << std::endl;
                      shininess = pow(shininess, 10) / d;
                      color(0) += result.first->color_(0) * it->color_(0) * shininess;
                      color(1) += result.first->color_(1) * it->color_(1) * shininess;
                      color(2) += result.first->color_(2) * it->color_(2) * shininess;
-                }
+                 }
             }
         }
     }

@@ -18,7 +18,7 @@ int main()
     //scene->triangles_[0].scale(0.4);
     //scene->triangles_[0].rotate(0.5, 0., 0., scene->triangles_[0].barycenter());
     std::cout << scene->triangles_.size();
-    cv::Mat3b image = scene->compute_image(1);
+    cv::Mat3b image = scene->compute_image(16);
     scene->show_image(image);
     //scene->save_image("lol.png", image);
     return 0;

@@ -6,8 +6,8 @@
 namespace shapes
 {
 Cylinder::Cylinder(const cv::Vec3d& center, double radius, double height, const cv::Vec3d& upDir,
-                   cv::Vec3d color, double alpha, ReflectionType reflectionType)
-    : Shape{color, alpha, reflectionType}
+                   cv::Vec3d color, double alpha, ReflectionType reflectionType, double phongCoeff)
+    : Shape{color, alpha, reflectionType, phongCoeff}
     , center_{center}
     , radius_{radius}
     , height_{height}

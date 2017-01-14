@@ -9,7 +9,7 @@ class Cylinder : public Shape
 {
 public:
     Cylinder(const cv::Vec3d& center, double radius, double height, const cv::Vec3d& upDir, cv::Vec3d color,
-             double alpha, ReflectionType reflectionType);
+             double alpha, ReflectionType reflectionType, double phongCoeff);
 
     virtual double intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const override;
 

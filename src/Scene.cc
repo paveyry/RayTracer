@@ -124,9 +124,10 @@ cv::Vec3d Scene::compute_diffuse_component(std::pair<const shapes::Shape*, doubl
             cv::Vec3d distance = (intersectionPoint - lightOrigin);
             double d = sqrt(distance.dot(distance));
             if (colorFactor > 0) {
-                color(0) += (result.first->color_(0) / 255.) * it->color_(0) * colorFactor / d;
-                color(1) += (result.first->color_(1) / 255.) * it->color_(1) * colorFactor / d;
-                color(2) += (result.first->color_(2) / 255.) * it->color_(2) * colorFactor / d;
+                double phong = result.first->phongCoeff_;
+                color(0) += (result.first->color_(0) / 255.) * phong * it->color_(0) * colorFactor / d;
+                color(1) += (result.first->color_(1) / 255.) * phong * it->color_(1) * colorFactor / d;
+                color(2) += (result.first->color_(2) / 255.) * phong * it->color_(2) * colorFactor / d;
             }
             if(result.first->reflectionType_ == shapes::SPECULAR){
                 cv::Vec3d V = cv::normalize(rayOrigin - intersectionPoint);
@@ -203,13 +204,14 @@ void Scene::load_scene(const std::string& file_name)
             cv::Vec3d col;
             double alpha;
             shapes::ReflectionType ref;
+            double phongCoeff;
             iss >> c.val[0] >> c.val[1] >> c.val[2] >> r >> col.val[0] >> col.val[1] >> col.val[2] >> alpha;
-            iss >> word;
+            iss >> word >> phongCoeff;
             if (word.compare("SPECULAR") == 0)
                 ref = shapes::ReflectionType::SPECULAR;
             else
                 ref = shapes::ReflectionType::DIFFUSED;
-            spheres_.push_back(shapes::Sphere(c, r, col, alpha, ref));
+            spheres_.push_back(shapes::Sphere(c, r, col, alpha, ref, phongCoeff));
         }
         else if (word.compare("Triangle") == 0)
         {
@@ -219,14 +221,15 @@ void Scene::load_scene(const std::string& file_name)
             cv::Vec3d col;
             double alpha;
             shapes::ReflectionType ref;
+            double phongCoeff;
             iss >> p1.val[0] >> p1.val[1] >> p1.val[2] >> p2.val[0] >> p2.val[1] >> p2.val[2];
             iss >> p3.val[0] >> p3.val[1] >> p3.val[2] >> col.val[0] >> col.val[1] >> col.val[2];
-            iss >> alpha >> word;
+            iss >> alpha >> word >> phongCoeff;
             if (word.compare("SPECULAR") == 0)
                 ref = shapes::ReflectionType::SPECULAR;
             else
                 ref = shapes::ReflectionType::DIFFUSED;
-            triangles_.push_back(shapes::Triangle(p1, p2, p3, col, alpha, ref));
+            triangles_.push_back(shapes::Triangle(p1, p2, p3, col, alpha, ref, phongCoeff));
         }
         else if (word.compare("Cylinder") == 0)
         {
@@ -237,13 +240,14 @@ void Scene::load_scene(const std::string& file_name)
             cv::Vec3d col;
             double alpha;
             shapes::ReflectionType ref;
+            double phongCoeff;
             iss >> c(0) >> c(1) >> c(2) >> r >> h >> updir(0) >> updir(1) >> updir(2);
-            iss >> col(0) >> col(1) >> col(2) >> alpha >> word;
+            iss >> col(0) >> col(1) >> col(2) >> alpha >> word >> phongCoeff;
             if (word.compare("SPECULAR") == 0)
                 ref = shapes::ReflectionType::SPECULAR;
             else
                 ref = shapes::ReflectionType::DIFFUSED;
-            cylinders_.push_back(shapes::Cylinder(c, r, h, updir, col, alpha, ref));
+            cylinders_.push_back(shapes::Cylinder(c, r, h, updir, col, alpha, ref, phongCoeff));
         }
     }
     file.close();

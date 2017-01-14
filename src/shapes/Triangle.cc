@@ -7,8 +7,8 @@ namespace shapes
 {
 
 Triangle::Triangle(cv::Vec3d p1, cv::Vec3d p2, cv::Vec3d p3, cv::Vec3d color, double alpha,
-                   ReflectionType reflectionType)
-    : Shape{color, alpha, reflectionType}
+                   ReflectionType reflectionType, double phongCoeff)
+    : Shape{color, alpha, reflectionType, phongCoeff}
     , p1_{p1}
     , p2_{p2}
     , p3_{p3}

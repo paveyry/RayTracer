@@ -14,7 +14,7 @@ Cylinder::Cylinder(const cv::Vec3d& center, double radius, double height, const 
     , upDir_{cv::normalize(upDir)}
 {}
 
-double Cylinder::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const
+std::pair<const Shape*, double> Cylinder::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const
 {
     double rdl = cv::norm(rayDir);
     cv::Vec3d rd = cv::normalize(rayDir);
@@ -35,7 +35,7 @@ double Cylinder::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) 
     double delta = b * b - 4 * a * c;
 
     if (delta < 0)
-        return -1;
+        return std::pair<const Shape*, double>(this, -1);
 
     double root1 = (-b + sqrt(delta)) / (2 * a);
     double root2 = (-b - sqrt(delta)) / (2 * a);
@@ -67,7 +67,9 @@ double Cylinder::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) 
         if (closestIntersection > intersection && intersection >= 0)
             closestIntersection = intersection;
 
-    return (closestIntersection != std::numeric_limits<double>::max()) ? closestIntersection / rdl : -1;
+    return (closestIntersection != std::numeric_limits<double>::max())
+           ? std::pair<const Shape*, double>(this, closestIntersection / rdl)
+           : std::pair<const Shape*, double>(this, -1);
 }
 
 cv::Vec3d Cylinder::getNormalVect(const cv::Vec3d pt) const

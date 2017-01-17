@@ -9,22 +9,22 @@ Mesh::Mesh(std::vector<Triangle>&& triangles, const cv::Vec3d& center)
     , center_{center}
 {}
 
-std::pair<const Triangle*, double> Mesh::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const
+std::pair<const Shape*, double> Mesh::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const
 {
     int closestTriangleIdx = -1;
     double closestDist = std::numeric_limits<double>::max();
-    for (int i = 0; i < triangles_.size(); ++i)
+    for (size_t i = 0; i < triangles_.size(); ++i)
     {
-        double dist = triangles_[i].intersect(raySource, rayDir);
-        if (dist < closestDist)
+        double dist = triangles_[i].intersect(raySource, rayDir).second;
+        if (dist > 0 && dist < closestDist)
         {
             closestDist = dist;
-            closestTriangleIdx = i;
+            closestTriangleIdx = static_cast<int>(i);
         }
     }
     if (closestTriangleIdx >= 0)
-        return std::pair<const Triangle*, double>(&triangles_[closestTriangleIdx], closestDist);
-    return std::pair<const Triangle*, double>(nullptr, -1);
+        return std::pair<const Shape*, double>(&triangles_[closestTriangleIdx], closestDist);
+    return std::pair<const Shape*, double>(nullptr, -1);
 }
 
 void Mesh::translate(const cv::Vec3d& vec)

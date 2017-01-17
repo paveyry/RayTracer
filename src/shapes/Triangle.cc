@@ -14,7 +14,7 @@ Triangle::Triangle(cv::Vec3d p1, cv::Vec3d p2, cv::Vec3d p3, cv::Vec3d color, do
     , p3_{p3}
 {}
 
-double Triangle::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const
+std::pair<const Shape*, double> Triangle::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const
 {
     double rdl = cv::norm(rayDir);
     auto rd = cv::normalize(rayDir);
@@ -23,22 +23,22 @@ double Triangle::intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) 
     auto h = rd.cross(e2);
     auto a = e1.dot(h);
     if (a > -0.00001 && a < 0.00001)
-        return -1;
+        return std::pair<const Shape*, double>(this, -1);
 
     auto s = raySource - p1_;
     double f = 1 / a;
     double u = f * s.dot(h);
     if (u < 0. || u > 1.)
-        return -1;
+        return std::pair<const Shape*, double>(this, -1);
 
     auto q = s.cross(e1);
     double v = f * rd.dot(q);
     if (v < 0. || u + v > 1.)
-        return -1;
+        return std::pair<const Shape*, double>(this, -1);
     double t = f * e2.dot(q);
     if (t > 0.00001)
-        return t / rdl;
-    return -1;
+        return std::pair<const Shape*, double>(this, t / rdl);
+    return std::pair<const Shape*, double>(this, -1);
 }
 
 cv::Vec3d Triangle::getNormalVect(const cv::Vec3d) const

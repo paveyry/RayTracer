@@ -16,7 +16,7 @@ class Shape
 public:
     Shape(cv::Vec3d color, double alpha, ReflectionType reflectionType, double phongCoeff);
 
-    virtual double intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const = 0;
+    virtual std::pair<const Shape*, double> intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const = 0;
 
     virtual cv::Vec3d getNormalVect(const cv::Vec3d pt) const = 0;
 

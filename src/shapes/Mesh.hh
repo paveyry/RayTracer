@@ -11,9 +11,7 @@ class Mesh
 public:
     Mesh(std::vector<Triangle>&& triangles, const cv::Vec3d& center);
 
-    //Mesh(std::move(vector));
-
-    std::pair<const Triangle*, double> intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const;
+    std::pair<const Shape*, double> intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const;
 
     void translate(const cv::Vec3d& vec);
 

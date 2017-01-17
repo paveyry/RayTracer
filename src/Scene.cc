@@ -1,4 +1,10 @@
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <array>
+
 #include "Scene.hh"
+#include "util.hh"
 
 Scene::Scene(const std::string& file_name)
 {
@@ -43,6 +49,8 @@ cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
         result = find_intersection(triangle, result, rayOrigin, rayDirection);
     for (const auto& cylinder : cylinders_)
         result = find_intersection(cylinder, result, rayOrigin, rayDirection);
+    for (const auto& mesh : meshes_)
+        result = find_intersection(mesh, result, rayOrigin, rayDirection);
 
     // Case no intersection
     if (result.first == nullptr and result.second == std::numeric_limits<double>::max())
@@ -99,6 +107,7 @@ cv::Vec3d Scene::compute_diffuse_component(std::pair<const shapes::Shape*, doubl
     {
         /*checking if ray from light to object is intervened then shadow else light*/
         cv::Vec3d lightOrigin = (*it).position_;
+        std::cout << intersectionPoint << std::endl;
         cv::Vec3d lightDirection = cv::normalize(intersectionPoint - lightOrigin);
         result.second = std::numeric_limits<double>::max();
 
@@ -108,6 +117,8 @@ cv::Vec3d Scene::compute_diffuse_component(std::pair<const shapes::Shape*, doubl
             result = find_intersection(triangle, result, lightOrigin, lightDirection);
         for (const auto& cylinder : cylinders_)
             result = find_intersection(cylinder, result, lightOrigin, lightDirection);
+        for (const auto& mesh : meshes_)
+            result = find_intersection(mesh, result, lightOrigin, lightDirection);
 
         cv::Vec3d lip = (lightOrigin + lightDirection * result.second);
         //if (result.first->reflectionType_ == 0)
@@ -124,7 +135,10 @@ cv::Vec3d Scene::compute_diffuse_component(std::pair<const shapes::Shape*, doubl
             double colorFactor = normal.dot(lightDirection) * 8;
             cv::Vec3d distance = (intersectionPoint - lightOrigin);
             double d = sqrt(distance.dot(distance));
-            if (colorFactor > 0) {
+            std::cout << "HIHI: " << colorFactor << std::endl;
+            if (colorFactor > 0)
+            {
+                std::cout << "HAHA" << std::endl;
                 double phong = result.first->phongCoeff_;
                 color(0) += (result.first->color_(0) / 255.) * phong * it->color_(0) * colorFactor / d;
                 color(1) += (result.first->color_(1) / 255.) * phong * it->color_(1) * colorFactor / d;
@@ -181,7 +195,7 @@ void Scene::load_scene(const std::string& file_name)
     {
         std::istringstream iss(line);
         iss >> word;
-        if (word.compare("Camera") == 0)
+        if (word == "Camera")
         {
             cv::Vec3d e;
             cv::Vec3d lk;
@@ -193,14 +207,14 @@ void Scene::load_scene(const std::string& file_name)
             iss >> u.val[0] >> u.val[1] >> u.val[2] >> fov >> w >> h;
             camera_ = new Camera(e, lk, u, fov, w, h);
         }
-        else if (word.compare("Light") == 0)
+        else if (word == "Light")
         {
             cv::Vec3d pos;
             cv::Vec3d col;
             iss >> pos.val[0] >> pos.val[1] >> pos.val[2] >> col.val[0] >> col.val[1] >> col.val[2];
             lights_.push_back(Light(pos, col));
         }
-        else if (word.compare("Sphere") == 0)
+        else if (word == "Sphere")
         {
             cv::Vec3d c;
             double r;
@@ -210,13 +224,13 @@ void Scene::load_scene(const std::string& file_name)
             double phongCoeff;
             iss >> c.val[0] >> c.val[1] >> c.val[2] >> r >> col.val[0] >> col.val[1] >> col.val[2] >> alpha;
             iss >> word >> phongCoeff;
-            if (word.compare("SPECULAR") == 0)
+            if (word == "SPECULAR")
                 ref = shapes::ReflectionType::SPECULAR;
             else
                 ref = shapes::ReflectionType::DIFFUSED;
             spheres_.push_back(shapes::Sphere(c, r, col, alpha, ref, phongCoeff));
         }
-        else if (word.compare("Triangle") == 0)
+        else if (word == "Triangle")
         {
             cv::Vec3d p1;
             cv::Vec3d p2;
@@ -228,13 +242,13 @@ void Scene::load_scene(const std::string& file_name)
             iss >> p1.val[0] >> p1.val[1] >> p1.val[2] >> p2.val[0] >> p2.val[1] >> p2.val[2];
             iss >> p3.val[0] >> p3.val[1] >> p3.val[2] >> col.val[0] >> col.val[1] >> col.val[2];
             iss >> alpha >> word >> phongCoeff;
-            if (word.compare("SPECULAR") == 0)
+            if (word == "SPECULAR")
                 ref = shapes::ReflectionType::SPECULAR;
             else
                 ref = shapes::ReflectionType::DIFFUSED;
             triangles_.push_back(shapes::Triangle(p1, p2, p3, col, alpha, ref, phongCoeff));
         }
-        else if (word.compare("Cylinder") == 0)
+        else if (word == "Cylinder")
         {
             cv::Vec3d c;
             double r;
@@ -246,12 +260,60 @@ void Scene::load_scene(const std::string& file_name)
             double phongCoeff;
             iss >> c(0) >> c(1) >> c(2) >> r >> h >> updir(0) >> updir(1) >> updir(2);
             iss >> col(0) >> col(1) >> col(2) >> alpha >> word >> phongCoeff;
-            if (word.compare("SPECULAR") == 0)
+            if (word == "SPECULAR")
                 ref = shapes::ReflectionType::SPECULAR;
             else
                 ref = shapes::ReflectionType::DIFFUSED;
             cylinders_.push_back(shapes::Cylinder(c, r, h, updir, col, alpha, ref, phongCoeff));
         }
+        else if (word == "Asset")
+        {
+            std::string file;
+            cv::Vec3d pos;
+            shapes::ReflectionType ref;
+            double phongCoeff;
+            iss >> file >> pos(0) >> pos(1) >> pos(2) >> word >> phongCoeff;
+            if (word == "SPECULAR")
+                ref = shapes::ReflectionType::SPECULAR;
+            else
+                ref = shapes::ReflectionType::DIFFUSED;
+            import3Dasset(file, ref, phongCoeff, pos);
+        }
     }
     file.close();
+}
+
+
+void Scene::import3Dasset(const std::string& file, shapes::ReflectionType reflectionType,
+                          double phongCoeff, const cv::Vec3d& position)
+{
+    Assimp::Importer importer;
+    importer.ReadFile(file, aiPostProcessSteps::aiProcess_Triangulate);
+    const aiScene* assimpScene = importer.GetScene();
+    aiMesh** meshes = assimpScene->mMeshes;
+    size_t nbMeshes = assimpScene->mNumMeshes;
+    for (size_t i = 0; i < nbMeshes; ++i)
+    {
+        size_t nbFaces = meshes[i]->mNumFaces;
+        aiFace* faces = meshes[i]->mFaces;
+        aiVector3D* vertices = meshes[i]->mVertices;
+        std::vector<shapes::Triangle> triangles;
+        for (size_t j = 0; j < nbFaces; ++j)
+        {
+            if (faces[j].mNumIndices != 3)
+                continue;
+            std::vector<cvaiVec3> vert;
+            for (size_t k = 0; k < 3; ++k)
+                vert.push_back(vertices[faces[j].mIndices[k]]);
+            std::cout << vert[0] << vert[1] << vert[2] << std::endl;
+            triangles.emplace_back(vert[0], vert[1], vert[2], cv::Vec3d(230, 220, 230), 255,
+                                   reflectionType, phongCoeff);
+            meshes_.emplace_back(std::move(triangles), cv::Vec3d{0, 0, 0});
+            meshes_[meshes_.size() - 1].translate(position);
+            auto& m = meshes_[meshes_.size() - 1];
+            for (auto& t : m.triangles_)
+                std::cout << t.p1_ << t.p2_ << t.p3_ << std::endl;
+        }
+    }
+    std::cout << file << " was successfully imported" << std::endl;
 }

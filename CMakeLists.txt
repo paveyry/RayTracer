@@ -10,4 +10,4 @@ SET(CMAKE_CXX_FLAGS_RELEASE "-O3")
 FILE(GLOB_RECURSE SOURCES "src/*")
 
 ADD_EXECUTABLE(RayTracer ${SOURCES} src/main.cc)
-TARGET_LINK_LIBRARIES(RayTracer opencv_core opencv_imgproc opencv_highgui opencv_video assimp)
+TARGET_LINK_LIBRARIES(RayTracer opencv_core opencv_imgproc opencv_highgui opencv_video assimp tbb)

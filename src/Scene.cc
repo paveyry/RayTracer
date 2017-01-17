@@ -2,6 +2,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <array>
+#include <tbb/tbb.h>
 
 #include "Scene.hh"
 #include "util.hh"
@@ -14,26 +15,30 @@ Scene::Scene(const std::string& file_name)
 cv::Mat3b Scene::compute_image(double samplingNumber)
 {
     cv::Mat3b image = cv::Mat3b(camera_->width_, camera_->height_, cv::Vec3d{0,0,0});
-    for (int y = 0; y < camera_->height_; ++y)
-        for (int x = 0; x < camera_->width_; ++x)
-        {
-            cv::Vec3d color = cv::Vec3d{0, 0, 0};
-            for (int i = 0; i < sqrt(samplingNumber); ++i) {
-                double sx = (double)x + ((double)i / sqrt(samplingNumber));
-                double sy = (double)y + ((double)i / sqrt(samplingNumber));
-                double pX = (2 * ((sx + 0.5) / camera_->width_) - 1) * camera_->angle_ * camera_->aspectRatio_;
-                double pY = (1 - 2 * (sy + 0.5) / camera_->height_) * camera_->angle_;
-                cv::Vec3d rayDirection = cv::Vec3d{pX, pY, -1};
-                rayDirection = cv::normalize(rayDirection);
-                color += send_ray(camera_->pos_, rayDirection, 0);
-            }
-            color /= sqrt(samplingNumber);
-            color(0) = std::min(255., color(0));
-            color(1) = std::min(255., color(1));
-            color(2) = std::min(255., color(2));
+    tbb::parallel_for(0, camera_->height_ * camera_->width_,
+                      1, [&](int pos)
+                      {
+                          int x = pos % camera_->width_;
+                          int y = pos / camera_->height_;
+                          cv::Vec3d color = cv::Vec3d{0, 0, 0};
+                          for (int i = 0; i < sqrt(samplingNumber); ++i)
+                          {
+                              double sx = (double) x + ((double) i / sqrt(samplingNumber));
+                              double sy = (double) y + ((double) i / sqrt(samplingNumber));
+                              double pX = (2 * ((sx + 0.5) / camera_->width_) - 1) * camera_->angle_ *
+                                          camera_->aspectRatio_;
+                              double pY = (1 - 2 * (sy + 0.5) / camera_->height_) * camera_->angle_;
+                              cv::Vec3d rayDirection = cv::Vec3d{pX, pY, -1};
+                              rayDirection = cv::normalize(rayDirection);
+                              color += send_ray(camera_->pos_, rayDirection, 0);
+                          }
+                          color /= sqrt(samplingNumber);
+                          color(0) = std::min(255., color(0));
+                          color(1) = std::min(255., color(1));
+                          color(2) = std::min(255., color(2));
 
-            image.at<cv::Vec3b>(x, y) = color;
-        }
+                          image.at<cv::Vec3b>(x, y) = color;
+                      });
     return image;
 }
 
@@ -107,7 +112,6 @@ cv::Vec3d Scene::compute_diffuse_component(std::pair<const shapes::Shape*, doubl
     {
         /*checking if ray from light to object is intervened then shadow else light*/
         cv::Vec3d lightOrigin = (*it).position_;
-        std::cout << intersectionPoint << std::endl;
         cv::Vec3d lightDirection = cv::normalize(intersectionPoint - lightOrigin);
         result.second = std::numeric_limits<double>::max();
 
@@ -135,10 +139,8 @@ cv::Vec3d Scene::compute_diffuse_component(std::pair<const shapes::Shape*, doubl
             double colorFactor = normal.dot(lightDirection) * 8;
             cv::Vec3d distance = (intersectionPoint - lightOrigin);
             double d = sqrt(distance.dot(distance));
-            std::cout << "HIHI: " << colorFactor << std::endl;
             if (colorFactor > 0)
             {
-                std::cout << "HAHA" << std::endl;
                 double phong = result.first->phongCoeff_;
                 color(0) += (result.first->color_(0) / 255.) * phong * it->color_(0) * colorFactor / d;
                 color(1) += (result.first->color_(1) / 255.) * phong * it->color_(1) * colorFactor / d;
@@ -305,14 +307,11 @@ void Scene::import3Dasset(const std::string& file, shapes::ReflectionType reflec
             std::vector<cvaiVec3> vert;
             for (size_t k = 0; k < 3; ++k)
                 vert.push_back(vertices[faces[j].mIndices[k]]);
-            std::cout << vert[0] << vert[1] << vert[2] << std::endl;
             triangles.emplace_back(vert[0], vert[1], vert[2], cv::Vec3d(230, 220, 230), 255,
                                    reflectionType, phongCoeff);
             meshes_.emplace_back(std::move(triangles), cv::Vec3d{0, 0, 0});
             meshes_[meshes_.size() - 1].translate(position);
             auto& m = meshes_[meshes_.size() - 1];
-            for (auto& t : m.triangles_)
-                std::cout << t.p1_ << t.p2_ << t.p3_ << std::endl;
         }
     }
     std::cout << file << " was successfully imported" << std::endl;

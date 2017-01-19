@@ -36,7 +36,7 @@ public:
     void save_image(const std::string& filename, const cv::Mat& image);
 
     void import3Dasset(const std::string& file, shapes::ReflectionType reflectionType,
-                       double phongCoeff, const cv::Vec3d& pos = {0, 0, 0});
+                       double phongCoeff, const cv::Vec3d& pos = {0, 0, 0}, bool triangulate = true);
 
 private:
     void load_scene(const std::string& file_name);
@@ -52,8 +52,9 @@ public:
 };
 
 template <class T>
-std::pair<const shapes::Shape*, double> Scene::find_intersection(const T& shape, std::pair<const shapes::Shape*, double> result,
-                                                                 const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection)
+std::pair<const shapes::Shape*, double>
+Scene::find_intersection(const T& shape, std::pair<const shapes::Shape*, double> result,
+                         const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection)
 {
     auto res = shape.intersect(rayOrigin, rayDirection);
     if (res.second > 0 and result.second > res.second)

@@ -12,14 +12,27 @@ Scene::Scene(const std::string& file_name)
     load_scene(file_name);
 }
 
+tbb::atomic<size_t> itercount;
 cv::Mat3b Scene::compute_image(double samplingNumber)
 {
+    size_t numTriang = triangles_.size();
+    for (auto& mesh : meshes_)
+        numTriang += mesh.triangles_.size();
+    std::cout << "The scene contains " << spheres_.size() << " spheres, " << cylinders_.size() << " cylinders, and "
+              << numTriang << " triangles (" << meshes_.size() << " meshes)."  << std::endl;
+
+
     cv::Mat3b image = cv::Mat3b(camera_->width_, camera_->height_, cv::Vec3d{0,0,0});
     tbb::parallel_for(0, camera_->height_ * camera_->width_,
                       1, [&](int pos)
                       {
                           int x = pos % camera_->width_;
-                          int y = pos / camera_->height_;
+                          int y = pos / camera_->width_;
+                          ++itercount;
+                          if (itercount % 5000 == 0)
+                              std::cerr << (static_cast<double>(itercount)
+                                           / static_cast<double>(camera_->width_ * camera_->height_)) * 100 << "%\n";
+
                           cv::Vec3d color = cv::Vec3d{0, 0, 0};
                           for (int i = 0; i < sqrt(samplingNumber); ++i)
                           {
@@ -58,7 +71,7 @@ cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirect
         result = find_intersection(mesh, result, rayOrigin, rayDirection);
 
     // Case no intersection
-    if (result.first == nullptr and result.second == std::numeric_limits<double>::max())
+    if (!result.first && result.second == std::numeric_limits<double>::max())
         return cv::Vec3d{0., 0., 0.};
 
     cv::Vec3d intersectionPoint = rayOrigin + rayDirection * result.second;
@@ -274,12 +287,13 @@ void Scene::load_scene(const std::string& file_name)
             cv::Vec3d pos;
             shapes::ReflectionType ref;
             double phongCoeff;
-            iss >> file >> pos(0) >> pos(1) >> pos(2) >> word >> phongCoeff;
+            bool triangulate;
+            iss >> file >> pos(0) >> pos(1) >> pos(2) >> word >> phongCoeff >> triangulate;
             if (word == "SPECULAR")
                 ref = shapes::ReflectionType::SPECULAR;
             else
                 ref = shapes::ReflectionType::DIFFUSED;
-            import3Dasset(file, ref, phongCoeff, pos);
+            import3Dasset(file, ref, phongCoeff, pos, triangulate);
         }
     }
     file.close();
@@ -287,10 +301,10 @@ void Scene::load_scene(const std::string& file_name)
 
 
 void Scene::import3Dasset(const std::string& file, shapes::ReflectionType reflectionType,
-                          double phongCoeff, const cv::Vec3d& position)
+                          double phongCoeff, const cv::Vec3d& position, bool triangulate)
 {
     Assimp::Importer importer;
-    importer.ReadFile(file, aiPostProcessSteps::aiProcess_Triangulate);
+    importer.ReadFile(file, triangulate ? aiPostProcessSteps::aiProcess_Triangulate : 0);
     const aiScene* assimpScene = importer.GetScene();
     aiMesh** meshes = assimpScene->mMeshes;
     size_t nbMeshes = assimpScene->mNumMeshes;
@@ -309,10 +323,13 @@ void Scene::import3Dasset(const std::string& file, shapes::ReflectionType reflec
                 vert.push_back(vertices[faces[j].mIndices[k]]);
             triangles.emplace_back(vert[0], vert[1], vert[2], cv::Vec3d(230, 220, 230), 255,
                                    reflectionType, phongCoeff);
-            meshes_.emplace_back(std::move(triangles), cv::Vec3d{0, 0, 0});
-            meshes_[meshes_.size() - 1].translate(position);
-            auto& m = meshes_[meshes_.size() - 1];
+
         }
+        shapes::Mesh mesh(std::move(triangles), cv::Vec3d{0, 0, 0, });
+        mesh.rotate(0, 0, M_PI / 2., mesh.center_);
+        mesh.translate(position);
+        meshes_.push_back(std::move(mesh));
+        auto& m = meshes_[meshes_.size() - 1];
     }
     std::cout << file << " was successfully imported" << std::endl;
 }

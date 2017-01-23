@@ -9,7 +9,7 @@ class Triangle : public Shape
 {
 public:
     Triangle(cv::Vec3d p1, cv::Vec3d p2, cv::Vec3d p3, cv::Vec3d color, double alpha,
-             ReflectionType reflectionType, double phongCoeff);
+             ReflectionType reflectionType, cv::Vec3d phongCoeff);
 
     virtual std::pair<const Shape*, double> intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const override;
 

@@ -14,7 +14,7 @@ enum ReflectionType
 class Shape
 {
 public:
-    Shape(cv::Vec3d color, double alpha, ReflectionType reflectionType, double phongCoeff);
+    Shape(cv::Vec3d color, double alpha, ReflectionType reflectionType, cv::Vec3d phongCoeff);
 
     virtual std::pair<const Shape*, double> intersect(const cv::Vec3d& raySource, const cv::Vec3d& rayDir) const = 0;
 
@@ -30,7 +30,7 @@ public:
     cv::Vec3d color_;
     double alpha_;
     ReflectionType reflectionType_;
-    double phongCoeff_;
+    cv::Vec3d phongCoeff_;
 };
 
 }

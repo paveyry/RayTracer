@@ -20,7 +20,7 @@ public:
     Scene(const std::string& file_name);
 
     cv::Mat3b compute_image(double samplingNumber);
-    cv::Vec3d send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion);
+    cv::Vec3d send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection);
 
     template <class T>
     std::pair<const shapes::Shape*, double>

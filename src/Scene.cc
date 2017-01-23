@@ -28,10 +28,9 @@ cv::Mat3b Scene::compute_image(double samplingNumber)
     {
         size_t x = pos % static_cast<size_t>(camera_->width_);
         size_t y = pos / static_cast<size_t>(camera_->width_);
-        if (++itercount % 5000 == 0)
-            std::cerr << (static_cast<double>(itercount)
-                          / static_cast<double>(camera_->width_ * camera_->height_)) * 100 <<
-            "%\n";
+//        if (++itercount % 10000 == 0)
+//            std::cerr << (static_cast<double>(itercount)
+//                          / static_cast<double>(camera_->width_ * camera_->height_)) * 100 << "%\n";
 
         cv::Vec3d color = cv::Vec3d{0, 0, 0};
         for (int i = 0; i < sqrt(samplingNumber); ++i)
@@ -43,7 +42,7 @@ cv::Mat3b Scene::compute_image(double samplingNumber)
             double pY = (1 - 2 * (sy + 0.5) / camera_->height_) * camera_->angle_;
             cv::Vec3d rayDirection = cv::Vec3d{pX, pY, -1};
             rayDirection = cv::normalize(rayDirection);
-            color += send_ray(camera_->pos_, rayDirection, 0);
+            color += send_ray(camera_->pos_, rayDirection);
         }
         color /= sqrt(samplingNumber);
 
@@ -59,7 +58,7 @@ cv::Mat3b Scene::compute_image(double samplingNumber)
     return image;
 }
 
-cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection, int recursion)
+cv::Vec3d Scene::send_ray(const cv::Vec3d& rayOrigin, const cv::Vec3d& rayDirection)
 {
     std::pair<const shapes::Shape*, double> result{nullptr, std::numeric_limits<double>::max()};
 
@@ -289,7 +288,6 @@ void Scene::import3Dasset(const std::string& file, shapes::ReflectionType reflec
         mesh.rotate(0, 0, M_PI / 2., mesh.center_);
         mesh.translate(position);
         meshes_.push_back(std::move(mesh));
-        auto& m = meshes_[meshes_.size() - 1];
     }
     std::cout << file << " was successfully imported" << std::endl;
 }

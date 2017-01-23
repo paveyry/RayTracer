@@ -1,27 +1,35 @@
 #include <opencv2/core/core.hpp>
 #include <iostream>
-#include <assimp/scene.h>
-#include <assimp/importerdesc.h>
 
-#include "shapes/Sphere.hh"
+#include "scenarios/demovideo.hh"
 #include "Camera.hh"
-#include "light/Light.hh"
 #include "Scene.hh"
 
 int main()
 {
     std::cout << "Main launched" << std::endl;
-    Scene* scene = new Scene("inputs/input.txt");
+    std::shared_ptr<Scene> scene = std::make_shared<Scene>("inputs/input.txt");
 
-    cv::Mat3b image;
+    std::string outputfile = "bite.avi";
 
-    cv::VideoWriter video("bite2.avi", 10, CV_FOURCC('D','I','V','X'), cv::Size(800, 600), true);
-    for (int i = 0; i < 60; ++i)
+    // Remove previous file
+    std::remove(outputfile.c_str());
+
+    // Open video write stream
+    cv::VideoWriter video(outputfile, CV_FOURCC('M', 'P', '4', '2'), 30,
+                          cv::Size(scene->camera_->height_, scene->camera_->width_), true);
+
+    // Check for opening errors
+    if (!video.isOpened())
     {
-        scene->spheres_[0].translate(cv::Vec3d(0, 0, 0.016667));
-        image = scene->compute_image(1);
-        video << image;
+        std::cerr << "Error in opening video writer feed!" << std::endl;
+        getchar();
+        return 1;
     }
+
+    // Launch scenario rendering
+    scenarios::demovideo(video, scene);
+
     //scene->show_image(image);
     //scene->save_image("lol.png", image);
 

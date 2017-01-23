@@ -21,13 +21,13 @@ cv::Mat3b Scene::compute_image(double samplingNumber)
     std::cout << "The scene contains " << spheres_.size() << " spheres, " << cylinders_.size() << " cylinders, and "
               << numTriang << " triangles (" << meshes_.size() << " meshes)."  << std::endl;
 
-    cv::Mat3b image = cv::Mat3b(camera_->height_, camera_->width_, cv::Vec3d{0,0,0});
+    cv::Mat3b image = cv::Mat3b(camera_->width_, camera_->height_, cv::Vec3d{0,0,0});
     //auto start = std::chrono::high_resolution_clock::now();
 
     tbb::parallel_for(0, camera_->height_ * camera_->width_, 1, [&](int pos)
     {
-        size_t x = pos / static_cast<size_t>(camera_->width_);
-        size_t y = pos % static_cast<size_t>(camera_->width_);
+        size_t x = pos % static_cast<size_t>(camera_->width_);
+        size_t y = pos / static_cast<size_t>(camera_->width_);
         if (++itercount % 5000 == 0)
             std::cerr << (static_cast<double>(itercount)
                           / static_cast<double>(camera_->width_ * camera_->height_)) * 100 <<
@@ -174,7 +174,7 @@ void Scene::load_scene(const std::string& file_name)
             int w;
             int h;
             iss >> e.val[0] >> e.val[1] >> e.val[2] >> lk.val[0] >> lk.val[1] >> lk.val[2];
-            iss >> u.val[0] >> u.val[1] >> u.val[2] >> fov >> w >> h;
+            iss >> u.val[0] >> u.val[1] >> u.val[2] >> fov >> h >> w;
             camera_ = std::make_shared<Camera>(e, lk, u, fov, w, h);
         }
         else if (word == "Light")
@@ -253,6 +253,8 @@ void Scene::load_scene(const std::string& file_name)
                 ref = shapes::ReflectionType::DIFFUSED;
             import3Dasset(file, ref, phongCoeff, alpha, pos, triangulate);
         }
+        else if (word == "#")
+            continue;
     }
     file.close();
 }

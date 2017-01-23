@@ -12,9 +12,18 @@ int main()
 {
     std::cout << "Main launched" << std::endl;
     Scene* scene = new Scene("inputs/input.txt");
-    scene->triangles_[0].translate(cv::Vec3d(-1, 1, -1.4));
-    cv::Mat3b image = scene->compute_image(4);
-    scene->show_image(image);
-    scene->save_image("lol.png", image);
+
+    cv::Mat3b image;
+
+    cv::VideoWriter video("bite2.avi", 10, CV_FOURCC('D','I','V','X'), cv::Size(800, 600), true);
+    for (int i = 0; i < 60; ++i)
+    {
+        scene->spheres_[0].translate(cv::Vec3d(0, 0, 0.016667));
+        image = scene->compute_image(1);
+        video << image;
+    }
+    //scene->show_image(image);
+    //scene->save_image("lol.png", image);
+
     return 0;
 }

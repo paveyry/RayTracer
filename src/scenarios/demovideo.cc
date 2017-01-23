@@ -83,9 +83,9 @@ void demovideo(cv::VideoWriter& video, const std::shared_ptr<Scene>& scene)
             std::cerr << "Computing frames " << framecount << " to " << framecount + 10 << std::endl;
         image = scene->compute_image(4);
         video << image;
-        scene->triangles_[0].scale(0.9);
-        scene->spheres_[0].scale(0.9);
-        scene->cylinders_[0].scale(0.9);
+        scene->triangles_[0].scale(0.98);
+        scene->spheres_[0].scale(0.98);
+        scene->cylinders_[0].scale(0.98);
     }
 }
 

@@ -1,5 +1,6 @@
 #include <opencv2/core/core.hpp>
 #include <iostream>
+#include <memory>
 
 #include "scenarios/demovideo.hh"
 #include "Camera.hh"
@@ -10,7 +11,11 @@ int main()
     std::cout << "Main launched" << std::endl;
     std::shared_ptr<Scene> scene = std::make_shared<Scene>("inputs/input.txt");
 
-    std::string outputfile = "bite.avi";
+/*
+     The following commented block is for video synthesis...
+
+
+    std::string outputfile = "image_synthesis.avi";
 
     // Remove previous file
     std::remove(outputfile.c_str());
@@ -29,9 +34,10 @@ int main()
 
     // Launch scenario rendering
     scenarios::demovideo(video, scene);
-
-    //scene->show_image(image);
-    //scene->save_image("lol.png", image);
+*/
+    cv::Mat3b image = scene->compute_image(16);
+    scene->save_image("generated_image.png", image);
+    scene->show_image(image);
 
     return 0;
 }

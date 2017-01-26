@@ -28,9 +28,9 @@ cv::Mat3b Scene::compute_image(double samplingNumber)
     {
         size_t x = pos % static_cast<size_t>(camera_->width_);
         size_t y = pos / static_cast<size_t>(camera_->width_);
-//        if (++itercount % 10000 == 0)
-//            std::cerr << (static_cast<double>(itercount)
-//                          / static_cast<double>(camera_->width_ * camera_->height_)) * 100 << "%\n";
+        if (++itercount % 10000 == 0)
+            std::cerr << (static_cast<double>(itercount)
+                          / static_cast<double>(camera_->width_ * camera_->height_)) * 100 << "%\n";
 
         cv::Vec3d color = cv::Vec3d{0, 0, 0};
         for (int i = 0; i < sqrt(samplingNumber); ++i)
